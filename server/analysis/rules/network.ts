@@ -240,11 +240,13 @@ const certificate: Rule = (input) => {
       sources: ['Globalping'],
     });
   }
-  if (days <= 30) {
+  // Certificates are often short-lived and renewed automatically a few weeks
+  // before expiry, so only the last two weeks are worth raising.
+  if (days <= 14) {
     findings.push({
       id: 'certificate-expiry',
       title: days < 0 ? 'TLS certificate has expired' : `TLS certificate expires in ${days} day${days === 1 ? '' : 's'}`,
-      severity: days <= 14 ? 'critical' : 'high',
+      severity: days <= 7 ? 'critical' : 'high',
       category: 'Protocol & security',
       summary: 'When the certificate expires every visitor gets a full-page security error.',
       evidence: [`Expires: ${tls.expiresAt}`, `Issuer: ${tls.issuer ?? 'unknown'}`],
@@ -285,7 +287,8 @@ const slowBackend: Rule = (input) => {
 };
 
 const packetLoss: Rule = (input) => {
-  const lossy = (input.network ?? []).filter((r) => (r.packetLoss ?? 0) > 2);
+  // One probe sends 10 packets, so a single lost packet is noise; report sustained loss only.
+  const lossy = (input.network ?? []).filter((r) => (r.packetLoss ?? 0) > 15);
   if (lossy.length === 0) return [];
   return [{
     id: 'packet-loss',

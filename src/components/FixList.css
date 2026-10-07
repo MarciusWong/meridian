@@ -1,0 +1,266 @@
+.fix-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fix-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.filter-chip[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.filter-chip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.filter-icon-critical { color: var(--critical); }
+.filter-icon-high { color: var(--serious); }
+.filter-icon-medium { color: var(--warning); }
+.filter-icon-low { color: var(--muted); }
+
+.filter-count {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.fix-list {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.fix {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Severity rail on the leading edge */
+.fix::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+}
+
+.fix-critical::before { background: var(--critical); }
+.fix-high::before { background: var(--serious); }
+.fix-medium::before { background: var(--warning); }
+.fix-low::before { background: var(--line-strong); }
+
+.fix-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px 16px 20px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.fix-head:hover {
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+}
+
+.fix-rank {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  padding-top: 2px;
+}
+
+.fix-main {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fix-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.fix-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.fix-meta .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.fix-category {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-right: 2px;
+}
+
+.fix-chevron {
+  margin-top: 4px;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.fix-open .fix-chevron {
+  transform: rotate(180deg);
+}
+
+.fix-body {
+  padding: 0 20px 20px 58px;
+}
+
+.fix-summary {
+  color: var(--ink-2);
+  max-width: 80ch;
+}
+
+.fix-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.fix-columns h4 {
+  margin-bottom: 10px;
+}
+
+.fix-steps {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.fix-steps li::marker {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.fix-steps code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+
+.fix-evidence {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.fix-evidence li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  padding: 6px 9px;
+  background: var(--surface-2);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.fix-more,
+.fix-locations {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+
+.fix-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.fix-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.fix-foot a .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.fix-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fix-empty .icon {
+  width: 24px;
+  height: 24px;
+  color: var(--good);
+}
+
+.fix-none {
+  color: var(--ink-3);
+  margin-top: 12px;
+}
+
+@media (max-width: 760px) {
+  .fix-body {
+    padding: 0 16px 18px 20px;
+  }
+  .fix-columns {
+    grid-template-columns: 1fr;
+  }
+  .fix-head {
+    gap: 10px;
+    padding: 14px 14px 14px 18px;
+  }
+}
+
+@media print {
+  .fix-body[hidden] {
+    display: block !important;
+  }
+}

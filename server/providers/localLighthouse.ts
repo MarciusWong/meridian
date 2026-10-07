@@ -16,8 +16,14 @@ function serialised<T>(task: () => Promise<T>): Promise<T> {
   return run;
 }
 
-export function runLocalLighthouse(url: string, formFactor: FormFactor, chromePath: string): Promise<RawLhr> {
+export function runLocalLighthouse(
+  url: string,
+  formFactor: FormFactor,
+  chromePath: string,
+  onStart: () => void = () => {},
+): Promise<RawLhr> {
   return serialised(async () => {
+    onStart();
     const chrome = await chromeLauncher.launch({
       chromePath,
       chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],

@@ -83,15 +83,18 @@ function flattenHeaders(headers: GpRawResult['headers']): Record<string, string>
   return out;
 }
 
-const CACHE_HEADERS = ['cf-cache-status', 'x-cache', 'x-vercel-cache', 'x-nf-cache-status', 'cdn-cache', 'x-cache-status', 'x-proxy-cache'];
+// Explicit single-value status headers first; x-cache last because multi-tier
+// caches list every tier there ("cp3071 miss, cp3071 hit/15487").
+const CACHE_HEADERS = ['cf-cache-status', 'x-cache-status', 'x-vercel-cache', 'x-nf-cache-status', 'cdn-cache', 'x-proxy-cache', 'x-cache'];
+const CACHE_TOKEN = /\b(HIT|MISS|EXPIRED|STALE|BYPASS|DYNAMIC|REVALIDATED|UPDATING|PASS)\b/g;
 
+/** The cache result at the tier nearest the visitor, which is the last one listed. */
 export function cacheStatusFrom(headers: Record<string, string>): string | null {
   for (const name of CACHE_HEADERS) {
     const value = headers[name];
-    if (value) {
-      const match = value.toUpperCase().match(/\b(HIT|MISS|EXPIRED|STALE|BYPASS|DYNAMIC|REVALIDATED|UPDATING|PASS)\b/);
-      return match ? match[1] : value.toUpperCase();
-    }
+    if (!value) continue;
+    const tokens = value.toUpperCase().match(CACHE_TOKEN);
+    return tokens ? tokens[tokens.length - 1] : value.toUpperCase();
   }
   return null;
 }
@@ -314,7 +317,7 @@ export async function measureGlobally(
   const [warm, ping] = await Promise.all([
     client.run(buildHttpRequest(url, locations, cold.id)).catch(() => null),
     client
-      .run({ type: 'ping', target: hostname, locations: cold.id, measurementOptions: { packets: 3 } })
+      .run({ type: 'ping', target: hostname, locations: cold.id, measurementOptions: { packets: 10 } })
       .catch(() => null),
   ]);
 

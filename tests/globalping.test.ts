@@ -4,6 +4,7 @@ import pingFixture from './fixtures/globalping-ping.json';
 import {
   assembleLocationResults,
   buildHttpRequest,
+  cacheStatusFrom,
   parseHttpResult,
   type GpMeasurement,
 } from '../server/providers/globalping';
@@ -79,5 +80,22 @@ describe('assembleLocationResults', () => {
     broken.results[0].result.statusCode = 503;
     const results = assembleLocationResults([london], broken, null, null);
     expect(results[0].status).toBe('http-error');
+  });
+});
+
+describe('cacheStatusFrom', () => {
+  it('reads single-tier CDN headers', () => {
+    expect(cacheStatusFrom({ 'cf-cache-status': 'DYNAMIC' })).toBe('DYNAMIC');
+    expect(cacheStatusFrom({ 'x-vercel-cache': 'HIT' })).toBe('HIT');
+  });
+  it('uses the tier nearest the visitor (last entry) in multi-tier x-cache headers', () => {
+    expect(cacheStatusFrom({ 'x-cache': 'cp3071 miss, cp3071 hit/15487' })).toBe('HIT');
+    expect(cacheStatusFrom({ 'x-cache': 'HIT, MISS' })).toBe('MISS');
+  });
+  it('prefers an explicit status header over x-cache', () => {
+    expect(cacheStatusFrom({ 'x-cache': 'cp1 miss, cp2 miss', 'x-cache-status': 'hit-front' })).toBe('HIT');
+  });
+  it('returns null without cache headers', () => {
+    expect(cacheStatusFrom({ server: 'nginx' })).toBeNull();
   });
 });

@@ -128,8 +128,20 @@ describe('buildRecommendations', () => {
   });
 
   it('flags certificates that expire soon', () => {
-    const network = ids.map((id) => net(id, 120, { cache: 'HIT', expiresAt: '2026-10-12T00:00:00Z' }));
-    expect(find(buildRecommendations(input({ network })), 'certificate-expiry')?.severity).toBe('critical');
+    const expiring = (date: string) => ids.map((id) => net(id, 120, { cache: 'HIT', expiresAt: date }));
+    expect(find(buildRecommendations(input({ network: expiring('2026-10-12T00:00:00Z') })), 'certificate-expiry')?.severity).toBe('critical');
+    expect(find(buildRecommendations(input({ network: expiring('2026-10-19T00:00:00Z') })), 'certificate-expiry')?.severity).toBe('high');
+  });
+
+  it('does not flag short-lived, auto-renewed certificates with weeks left', () => {
+    const network = ids.map((id) => net(id, 120, { cache: 'HIT', expiresAt: '2026-11-02T00:00:00Z' }));
+    expect(find(buildRecommendations(input({ network })), 'certificate-expiry')).toBeUndefined();
+  });
+
+  it('only reports meaningful packet loss', () => {
+    const lossy = (loss: number) => ids.map((id, i) => ({ ...net(id, 120, { cache: 'HIT' }), packetLoss: i === 0 ? loss : 0 }));
+    expect(find(buildRecommendations(input({ network: lossy(10) })), 'packet-loss')).toBeUndefined();
+    expect(find(buildRecommendations(input({ network: lossy(30) })), 'packet-loss')?.locations).toEqual(['london']);
   });
 
   it('flags slow back-end processing even close to the server', () => {

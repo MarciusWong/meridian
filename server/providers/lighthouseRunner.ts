@@ -29,7 +29,9 @@ export async function runLighthouse(url: string, formFactor: FormFactor, onDetai
   }
 
   if (!config.chromePath) throw new Error('No Chrome/Chromium found for local Lighthouse. Set CHROME_PATH or PSI_API_KEY.');
-  onDetail('Running Lighthouse in local headless Chromium');
-  const lhr = await runLocalLighthouse(url, formFactor, config.chromePath);
+  onDetail('Queued — local audits run one at a time');
+  const lhr = await runLocalLighthouse(url, formFactor, config.chromePath, () =>
+    onDetail('Running Lighthouse in local headless Chromium'),
+  );
   return { summary: normaliseLighthouse(lhr, 'Lighthouse'), field: null, notes };
 }

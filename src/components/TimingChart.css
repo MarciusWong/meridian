@@ -1,0 +1,125 @@
+.timing-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  list-style: none;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+
+.timing-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.timing-plot {
+  --label-w: 112px;
+  --value-w: 64px;
+  position: relative;
+  padding-bottom: 26px;
+}
+
+.timing-grid {
+  position: absolute;
+  inset: 0 var(--value-w) 0 var(--label-w);
+  pointer-events: none;
+}
+
+.timing-grid span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--line);
+}
+
+.timing-grid span:first-child {
+  border-left-color: var(--line-strong);
+}
+
+.timing-grid em {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-style: normal;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timing-rows {
+  position: relative;
+  list-style: none;
+}
+
+.timing-row {
+  display: grid;
+  grid-template-columns: var(--label-w) 1fr;
+  align-items: center;
+  height: 30px;
+  outline: none;
+  border-radius: 6px;
+}
+
+.timing-row:hover,
+.timing-row:focus-visible {
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+}
+
+.timing-city {
+  font-size: 13px;
+  color: var(--ink-2);
+  padding-right: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timing-track {
+  /* Same width as the gridlines' plot area; the total label overflows into the value gutter. */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - var(--value-w));
+}
+
+.timing-bar {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  height: 16px;
+  min-width: 4px;
+}
+
+.timing-seg {
+  flex-basis: 0;
+  min-width: 2px;
+  height: 100%;
+}
+
+.timing-seg:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.timing-total {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  /* Keep every other axis label so they never collide. */
+  .timing-grid span:nth-child(even) em {
+    display: none;
+  }
+  .timing-plot {
+    --label-w: 84px;
+    --value-w: 52px;
+  }
+  .timing-city {
+    font-size: 12px;
+  }
+}

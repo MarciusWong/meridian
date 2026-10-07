@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Build the front end -------------------------------------------------------
-FROM node:22-bookworm-slim AS build
+FROM node:25-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 # ---- Runtime -------------------------------------------------------------------
-FROM node:22-bookworm-slim
+FROM node:25-bookworm-slim
 ENV NODE_ENV=production \
     PORT=8787 \
     CHROME_PATH=/usr/bin/chromium \

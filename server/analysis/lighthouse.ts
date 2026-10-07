@@ -91,6 +91,7 @@ function describeItem(item: unknown): string | null {
   else if (typeof row.totalBytes === 'number' && row.totalBytes > 0) extras.push(formatBytes(row.totalBytes));
   if (typeof row.wastedMs === 'number' && row.wastedMs > 0) extras.push(`${Math.round(row.wastedMs)} ms`);
   else if (typeof row.total === 'number' && row.total > 0) extras.push(`${Math.round(row.total)} ms`);
+  else if (typeof row.duration === 'number' && row.duration > 0) extras.push(`${Math.round(row.duration)} ms`);
   return extras.length ? `${label} (${extras.join(', ')})` : label;
 }
 

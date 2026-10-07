@@ -47,6 +47,11 @@ describe('normaliseLighthouse', () => {
     expect(summary.screenshot).toMatch(/^data:image\/jpeg/);
   });
 
+  it('includes durations in evidence for main-thread breakdowns', () => {
+    const audit = normaliseLighthouse(lhr, 'Lighthouse').audits.find((a) => a.id === 'mainthread-work-breakdown');
+    expect(audit?.items[0]).toBe('Other (4936 ms)');
+  });
+
   it('strips markdown from audit titles', () => {
     const withCode = structuredClone(lhr);
     Object.assign(withCode.audits['unsized-images'], {

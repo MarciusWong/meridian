@@ -6,6 +6,8 @@ import lighthouse from 'lighthouse';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import type { FormFactor } from '../../shared/types';
 import type { RawLhr } from '../analysis/lighthouse';
+import { config } from '../config';
+import { PRIVATE_URL_PATTERNS } from '../security/targetGuard';
 
 // Lighthouse drives a whole browser; running two at once skews both results.
 let queue: Promise<unknown> = Promise.resolve();
@@ -37,6 +39,7 @@ export function runLocalLighthouse(
           logLevel: 'error',
           onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
           maxWaitForLoad: 45_000,
+          blockedUrlPatterns: config.allowPrivateTargets ? [] : PRIVATE_URL_PATTERNS,
         },
         formFactor === 'desktop' ? desktopConfig : undefined,
       );

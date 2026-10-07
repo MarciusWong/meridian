@@ -111,3 +111,25 @@ export async function assertPublicTarget(url: string, resolve: Resolver = system
     throw new TargetError(`${host} points to a private network address and cannot be tested.`);
   }
 }
+
+/**
+ * URL patterns for private and local addresses, for browsers we drive
+ * (Lighthouse's blockedUrlPatterns), so a tested page cannot make the server's
+ * browser request internal services. Hostnames that resolve privately are
+ * not covered; the page URL itself is checked with assertPublicTarget.
+ */
+export const PRIVATE_URL_PATTERNS: string[] = [
+  '*://localhost*',
+  '*://127.*',
+  '*://10.*',
+  '*://192.168.*',
+  '*://169.254.*',
+  '*://0.*',
+  ...Array.from({ length: 16 }, (_, i) => `*://172.${16 + i}.*`),
+  '*://[::1]*',
+  '*://[fc*',
+  '*://[fd*',
+  '*://[fe80:*',
+  '*://*.internal/*',
+  '*://*.local/*',
+];

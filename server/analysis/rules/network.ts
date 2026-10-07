@@ -249,7 +249,7 @@ const certificate: Rule = (input) => {
       severity: days <= 7 ? 'critical' : 'high',
       category: 'Protocol & security',
       summary: 'When the certificate expires every visitor gets a full-page security error.',
-      evidence: [`Expires: ${tls.expiresAt}`, `Issuer: ${tls.issuer ?? 'unknown'}`],
+      evidence: [`Expires: ${tls.expiresAt.slice(0, 10)} (${days} days)`, `Issuer: ${tls.issuer ?? 'unknown'}`],
       fixes: ['Renew the certificate now.', 'Automate renewal (ACME / certbot, or your CDN’s managed certificates) and monitor expiry.'],
       sources: ['Globalping'],
     });

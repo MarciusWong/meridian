@@ -100,4 +100,5 @@ npm run build:dots  # regenerate the dot-matrix world map
   A free token raises this.
 * Without `PSI_API_KEY`, Google usually rate-limits anonymous PageSpeed Insights calls, so Lighthouse
   runs locally and real-user (CrUX) data is not available.
-* Private and local network addresses are refused unless `ALLOW_PRIVATE_TARGETS=true`.
+* Private and local network addresses are refused unless `ALLOW_PRIVATE_TARGETS=true`, and local Lighthouse
+  runs block requests to private IP ranges so a tested page cannot reach internal services.

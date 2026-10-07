@@ -181,6 +181,17 @@ describe('API', () => {
     expect(report.scores?.globalDelivery).toBeNull();
   });
 
+  it('explains when the page blocked the inspector', async () => {
+    const blockedManager = new JobManager(
+      { ...providers, inspect: async () => ({ ...inspection, status: 403, html: null }) },
+      new ReportStore(dir),
+      { maxConcurrentJobs: 2 },
+    );
+    const report = await blockedManager.run(blockedManager.create({ url: 'https://example.com' }, 'blocked').id);
+    expect(report.errors.join(' ')).toMatch(/HTTP 403/);
+    expect(report.recommendations.some((r) => r.id === 'compression')).toBe(false);
+  });
+
   it('returns 404 for unknown reports', async () => {
     expect((await fetch(`${base}/api/tests/does-not-exist`)).status).toBe(404);
   });

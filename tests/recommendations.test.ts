@@ -232,6 +232,15 @@ describe('buildRecommendations', () => {
     expect(find(recs, 'brotli')).toBeUndefined(); // no compression at all is reported instead
   });
 
+  it('skips header and HTML checks when the page answered with an error (e.g. bot protection)', () => {
+    const blocked = inspection(
+      { status: 403, compression: null, hsts: false, supportsHttp3: false, httpVersion: 'http/1.1' },
+      { hasViewport: false },
+    );
+    const recs = buildRecommendations(input({ inspection: blocked }));
+    for (const id of ['compression', 'hsts', 'http3', 'http2', 'viewport']) expect(find(recs, id), id).toBeUndefined();
+  });
+
   it('flags HTML problems', () => {
     const recs = buildRecommendations(
       input({

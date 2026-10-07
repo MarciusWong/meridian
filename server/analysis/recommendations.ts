@@ -59,9 +59,13 @@ function priorityOf(f: Finding): number {
 }
 
 export function buildRecommendations(input: AnalysisInput): Recommendation[] {
+  // An error page (often bot protection answering our server) says nothing about
+  // the real page's headers or HTML, so page-level rules only see real responses.
+  const inspection = input.inspection && input.inspection.status < 400 ? input.inspection : null;
+  const analysed = { ...input, inspection };
   const groups = new Map<string, Finding[]>();
   for (const rule of RULES) {
-    for (const finding of rule(input)) {
+    for (const finding of rule(analysed)) {
       groups.set(finding.id, [...(groups.get(finding.id) ?? []), finding]);
     }
   }

@@ -118,6 +118,7 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
   'unsized-images': {
     key: 'unsized-images',
     category: 'Rendering',
+    title: 'Give images explicit width and height',
     fixes: ['Add width and height attributes (or CSS aspect-ratio) to images.'],
   },
   'cls-culprits-insight': {

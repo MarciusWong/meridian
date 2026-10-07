@@ -47,6 +47,16 @@ describe('normaliseLighthouse', () => {
     expect(summary.screenshot).toMatch(/^data:image\/jpeg/);
   });
 
+  it('strips markdown from audit titles', () => {
+    const withCode = structuredClone(lhr);
+    Object.assign(withCode.audits['unsized-images'], {
+      score: 0,
+      title: 'Image elements do not have explicit `width` and `height`',
+    });
+    const audit = normaliseLighthouse(withCode, 'Lighthouse').audits.find((a) => a.id === 'unsized-images');
+    expect(audit?.title).toBe('Image elements do not have explicit width and height');
+  });
+
   it('strips markdown links from descriptions', () => {
     for (const audit of summary.audits) expect(audit.description).not.toMatch(/\]\(http/);
   });

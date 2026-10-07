@@ -114,7 +114,7 @@ function normaliseAudit(audit: RawAudit): LighthouseAudit {
 
   return {
     id: audit.id,
-    title: audit.title,
+    title: stripMarkdown(audit.title),
     description: stripMarkdown(audit.description ?? ''),
     score: audit.score,
     scoreDisplayMode: audit.scoreDisplayMode,

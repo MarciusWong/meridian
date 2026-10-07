@@ -157,6 +157,12 @@ export class JobManager {
     try {
       report.inspection = await attempt('inspect', () => this.providers.inspect(report.url));
       const target = report.inspection?.finalUrl ?? report.url;
+      if (report.inspection && report.inspection.status >= 400) {
+        report.errors.push(
+          `The page answered Meridian's server with HTTP ${report.inspection.status} (often bot protection or a firewall), ` +
+            'so header and HTML checks were skipped. Global and Lighthouse results are unaffected.',
+        );
+      }
 
       let field: FieldData | null = null;
       const lighthouse = async (formFactor: FormFactor): Promise<LighthouseSummary | null> => {

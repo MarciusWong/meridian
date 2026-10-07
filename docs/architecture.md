@@ -1,4 +1,4 @@
-# Global PageSpeed — design
+# Meridian — architecture
 
 ## Goal
 
@@ -17,7 +17,7 @@ around the world, plus a prioritised list of fixes ordered by criticality.
 
 ## Locations
 
-A catalogue of ~30 cities grouped by region (North America, South America,
+A catalogue of 38 cities (`server/locations.ts`) grouped by region (North America, South America,
 Europe, Middle East, Africa, Asia, Oceania). A default set of 20 covers every
 inhabited continent: London, Frankfurt, Paris, Stockholm, Madrid, Warsaw,
 New York, Ashburn, Chicago, Los Angeles, Toronto, São Paulo, Santiago,
@@ -44,10 +44,14 @@ client (React + Vite)  ──POST /api/tests──▶  server (Express)
 - `server/jobs.ts` — orchestration: runs providers, records step progress,
   survives individual provider failures (a report is still produced with what
   succeeded, and failures are listed).
-- `server/storage.ts` — reports persisted as JSON in `data/reports/` so report
-  URLs survive a restart.
-- `server/security/targetGuard.ts` — SSRF protection: only http(s), and the
-  hostname must resolve to public addresses.
+- `server/storage.ts` — reports persisted as JSON in `DATA_DIR` so report URLs
+  survive a restart; reports older than `REPORT_RETENTION_DAYS` are pruned.
+- `server/security/targetGuard.ts` — SSRF protection: only http(s), the
+  hostname must resolve to public addresses (re-checked on every redirect), and
+  local Lighthouse runs block requests to private IP ranges.
+- `server/security/rateLimit.ts` — sliding-window per-client rate limit.
+- `server/app.ts` — JSON API, security headers (CSP allows the one inline
+  theme script by hash), compression and static file serving.
 
 ## Recommendation engine
 
@@ -56,29 +60,34 @@ Every finding becomes a `Recommendation`:
 fixes[], impactMs?, impactBytes?, locations?, sources[], learnMoreUrl? }`.
 
 Ranking: severity tier first, then an impact score (estimated ms saved, bytes
-saved, number of affected locations). Rules come from three places:
+saved, number of affected locations). Rules live in `server/analysis/rules/`
+and come from four places:
 
 1. **Global network rules** — failing locations, slow TTFB per region, large
    spread between fastest and slowest regions (missing CDN / origin far from
    users), CDN cache MISS on HTML, slow DNS, slow TLS, old TLS, certificate
    expiry, high server think-time (TTFB minus network RTT).
 2. **Page inspector rules** — missing compression, no Brotli, redirect chain,
-   no HTTP/2, no HTTP/3, HTML not cacheable, render-blocking head scripts,
-   large HTML, images without dimensions / lazy-loading, many third-party
-   origins without preconnect.
+   no HTTP/2, no HTTP/3, no HSTS, missing viewport, render-blocking head
+   scripts, large HTML, images without dimensions / lazy-loading / modern
+   formats, many third-party origins or missing preconnects, font-display.
 3. **Lighthouse audits** — every failing opportunity / diagnostic, severity
-   derived from its metric savings and audit weight, with curated fix steps for
-   the most common audits and Lighthouse's own description otherwise.
+   derived from its estimated savings (paint time, blocking time, layout shift,
+   bytes), with curated fix steps for common audits (`auditGuide.ts`) and
+   Lighthouse's own description otherwise.
+4. **Real-user data** — Core Web Vitals from the Chrome UX Report that are not
+   "good" for real visitors.
 
 Duplicates across sources (e.g. "enable text compression") are merged so each
 fix appears once with all of its evidence.
 
 ## UI
 
-Single-page app, two views: **home** (URL input, location picker, recent
-reports) and **report**. The report shows: overall grade, Lighthouse scores,
+Single-page app (React + Vite), two code-split views: **home** (URL input,
+map-based location picker, this browser's recent reports) and **report**. The report shows: overall grade, Lighthouse scores,
 Core Web Vitals (lab + field), a dot-matrix world map with each probe coloured
 by TTFB status, a per-city timing breakdown (stacked bars: DNS / connect / TLS
 / server wait / download), the prioritised fix list with severity and category
-filters, and technical details. Light and dark themes. Every chart has a
-tooltip and a table equivalent; status colours always come with a label.
+filters, and technical details. Light and dark themes. Charts have hover and
+keyboard tooltips, per-location values are also available as a table, and
+status colours always come with an icon and a label.

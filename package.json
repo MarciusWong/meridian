@@ -1,21 +1,45 @@
 {
-  "name": "global-pagespeed",
+  "name": "meridian",
   "version": "1.0.0",
   "private": true,
-  "description": "Measure a website's speed from cities around the world and get a prioritised list of fixes.",
+  "description": "Measure how fast a website loads from cities around the world and get a prioritised list of fixes. Built on Globalping, Lighthouse and PageSpeed Insights.",
+  "keywords": [
+    "performance",
+    "page-speed",
+    "web-vitals",
+    "lighthouse",
+    "globalping",
+    "pagespeed-insights",
+    "ttfb",
+    "cdn",
+    "monitoring"
+  ],
+  "homepage": "https://github.com/MarciusWong/meridian#readme",
+  "bugs": {
+    "url": "https://github.com/MarciusWong/meridian/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarciusWong/meridian.git"
+  },
+  "license": "MIT",
+  "author": "Marcius Wong",
   "type": "module",
   "engines": {
     "node": ">=20.19"
   },
   "scripts": {
-    "dev": "concurrently -k -n api,web -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
-    "dev:server": "tsx watch server/index.ts",
+    "dev": "node scripts/dev.mjs",
+    "dev:server": "tsx watch server/index.ts --dev",
     "dev:client": "vite",
     "build": "vite build",
-    "start": "NODE_ENV=production tsx server/index.ts",
+    "start": "tsx server/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run format:check && npm run typecheck && npm test",
     "build:dots": "node scripts/build-world-dots.mjs"
   },
   "dependencies": {
@@ -37,7 +61,6 @@
     "@types/react-dom": "^19.3.0",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.1.2",
-    "concurrently": "^10.0.5",
     "d3-geo": "^3.1.1",
     "prettier": "^3.9.9",
     "react": "^19.3.0",

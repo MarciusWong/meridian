@@ -42,7 +42,8 @@ setInterval(prune, 6 * 60 * 60 * 1000).unref();
 const manager = new JobManager(providers, store, { maxConcurrentJobs: config.maxConcurrentJobs });
 
 const app = createApp(manager, {
-  staticDir: process.env.NODE_ENV === 'production' ? path.join(root, 'dist') : undefined,
+  // In development Vite serves the UI; otherwise serve the production build.
+  staticDir: process.argv.includes('--dev') ? undefined : path.join(root, 'dist'),
   rateLimiter: new RateLimiter({ limit: config.rateLimitPerHour, windowMs: 60 * 60 * 1000 }),
   publicHistory: config.publicHistory,
   trustProxy: config.trustProxy,

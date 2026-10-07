@@ -1,104 +1,230 @@
-# Meridian — global page speed
+<div align="center">
 
-Test how fast a website loads from cities around the world — London, Frankfurt,
-Sydney, São Paulo, Tokyo, Johannesburg, Mumbai and 30+ more — and get a
-prioritised list of fixes, most critical first.
+# Meridian
 
-Meridian combines free and open-source tools into one report:
+**How fast is your site, everywhere?**
 
-| Tool                                                                                                          | What it measures                                                                                                                                                                                        | Key                                                        |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| [Globalping](https://globalping.io) (open source probe network)                                               | Real HTTP requests from each selected city: DNS, connect, TLS, server wait, download, CDN cache status, TLS certificate, ping round-trip time. Each city is measured cold and warm from the same probe. | none (optional `GLOBALPING_TOKEN` raises the hourly limit) |
-| [Lighthouse](https://github.com/GoogleChrome/lighthouse) (open source)                                        | Full lab audit on mobile and desktop: Core Web Vitals, render-blocking resources, unused JS/CSS, images, caching, fonts, third parties…                                                                 | none — runs in local headless Chrome                       |
-| [PageSpeed Insights API](https://developers.google.com/speed/docs/insights/v5/get-started) + Chrome UX Report | Lighthouse run by Google, plus 28 days of real-user field data.                                                                                                                                         | optional `PSI_API_KEY` (free)                              |
-| Built-in page inspector                                                                                       | Redirect chain, compression (gzip/Brotli), HTTP/2 and HTTP/3, cache headers, HSTS, CDN detection, HTML structure (blocking scripts, unsized/legacy images, third-party origins, font loading).          | none                                                       |
-| [WebPageTest](https://www.webpagetest.org) (optional)                                                         | Real-browser page loads from WPT locations near the selected cities.                                                                                                                                    | optional `WPT_API_KEY`                                     |
+Load any web page from London, Frankfurt, Sydney, São Paulo, Tokyo and 30+ other cities,
+then get a ranked list of exactly what to fix — most critical first.
 
-The recommendation engine cross-checks every source, merges duplicates (e.g.
-render-blocking scripts found by both the inspector and Lighthouse) and ranks
-each fix by **severity** (critical → low), then by **estimated time saved**,
-**bytes saved** and **number of locations affected**. Each fix comes with the
-evidence behind it and concrete steps.
+[![CI](https://github.com/MarciusWong/meridian/actions/workflows/ci.yml/badge.svg)](https://github.com/MarciusWong/meridian/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Node 20.19+](https://img.shields.io/badge/node-%E2%89%A520.19-339933)
+
+<img src="docs/images/report.png" alt="A Meridian report: overall grade, scores, median time to first byte and a world map of results" width="900">
+
+</div>
+
+---
+
+## What it does
+
+Most speed tests run from one place. Your visitors don't. Meridian measures your page **from every
+continent at once**, audits it with Lighthouse, and turns everything it finds into a **prioritised
+fix list** with the evidence behind each item and concrete steps to fix it.
+
+- 🌍 **Global first-byte map** — real HTTP requests from probes in up to 30 cities, first visit and repeat visit
+- ⏱️ **Where the time goes** — DNS, connect, TLS, server wait and download for every city
+- 🧪 **Full Lighthouse audit** — mobile and desktop, Core Web Vitals, plus real-user data when a free Google key is set
+- 🔎 **Delivery checks** — redirects, compression, HTTP/2 and HTTP/3, caching headers, CDN detection, TLS certificate, HTML structure
+- 🧭 **Prioritised fixes** — ranked by severity, then by time saved, bytes saved and locations affected; duplicates across tools are merged
+- 📋 **Share it** — every report has a link, and exports to JSON, print/PDF or a Markdown checklist for your issue tracker
+- 🌓 Light and dark themes, works on phones, keyboard and screen-reader friendly
+
+<table>
+<tr>
+<td width="55%"><img src="docs/images/fixes.png" alt="Prioritised fix list with severity, impact and step-by-step fixes"></td>
+<td width="45%"><img src="docs/images/timing-dark.png" alt="Request timing breakdown per city in dark mode"></td>
+</tr>
+</table>
+
+## Built on free and open tools
+
+| Source                                                                                                                                            | What Meridian uses it for                                               | Needs a key?                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------- |
+| [Globalping](https://globalping.io) — open-source network of 5,000+ probes                                                                        | HTTP timings, CDN cache status, TLS certificate and ping from each city | No (a free token raises the hourly limit) |
+| [Lighthouse](https://github.com/GoogleChrome/lighthouse) — open source                                                                            | Lab audit in headless Chrome, mobile and desktop                        | No — runs on your server                  |
+| [PageSpeed Insights API](https://developers.google.com/speed/docs/insights/v5/about) + [Chrome UX Report](https://developer.chrome.com/docs/crux) | Lighthouse run by Google, plus 28 days of real-user Core Web Vitals     | Free key recommended                      |
+| Built-in page inspector                                                                                                                           | Redirects, compression, protocols, headers, CDN, HTML structure         | No                                        |
+| [WebPageTest](https://www.webpagetest.org) (optional)                                                                                             | Real-browser page loads from WebPageTest locations                      | Yes                                       |
 
 ## Quick start
 
-Requires Node.js 20.19+ and, for local Lighthouse runs, Chrome or Chromium.
+### Docker (recommended)
 
 ```bash
+git clone https://github.com/MarciusWong/meridian.git
+cd meridian
+docker compose up -d
+```
+
+Open **http://localhost:8787**. The image includes Chromium, so Lighthouse works out of the box.
+Reports are kept in the `meridian-data` volume.
+
+### Node.js
+
+Requires **Node.js 20.19+**, and Chrome or Chromium for local Lighthouse runs.
+
+```bash
+git clone https://github.com/MarciusWong/meridian.git
+cd meridian
 npm install
-cp .env.example .env      # optional: add API keys
-npm run dev               # API on :8787, UI on http://localhost:5173
+npm run build
+npm start            # http://localhost:8787
 ```
 
-Production:
+For development with hot reload: `npm run dev` (UI on http://localhost:5173, API on :8787).
+
+### Recommended: add free API keys
+
+Meridian works with no keys at all, but two free keys make it better:
 
 ```bash
-npm run build
-npm start                 # serves UI + API on http://localhost:8787
+cp .env.example .env
 ```
 
-Environment variables (all optional) are documented in [`.env.example`](.env.example).
-Load them with your process manager or `node --env-file=.env`.
+- **`PSI_API_KEY`** — [get one here](https://developers.google.com/speed/docs/insights/v5/get-started). Without it,
+  Google usually rate-limits anonymous requests, so Lighthouse runs locally and real-user data is missing.
+- **`GLOBALPING_TOKEN`** — [create one here](https://dash.globalping.io). Anonymous use is limited to 250 probe
+  measurements per hour per IP address; a default 20-city test uses 60.
 
-## How a test works
+`npm start`, `npm run dev` and `docker compose` all read `.env` automatically.
 
-1. **Inspect** — the server fetches the page itself (following and recording redirects).
-2. In parallel:
-   - **Globalping** runs an HTTP request from one probe in each selected city, repeats it from the
-     same probes (warm caches), and pings from them for network RTT.
-   - **Lighthouse** audits mobile and desktop — via PageSpeed Insights when it is available, falling
-     back to local headless Chrome.
-   - **WebPageTest** (if configured) loads the page in real browsers.
-3. **Analyse** — scores, per-region statistics and the ranked recommendations.
+## Configuration
 
-Reports are stored as JSON in `data/reports/` and have shareable URLs (`/report/<id>`).
-Each report can be exported as JSON, printed, or copied as a Markdown checklist.
+All settings are optional environment variables. See [`.env.example`](.env.example) for the annotated list.
 
-### Scoring
+| Variable                | Default        | Description                                                                                 |
+| ----------------------- | -------------- | ------------------------------------------------------------------------------------------- |
+| `PORT`                  | `8787`         | Port for the UI and API                                                                     |
+| `HOST`                  | `0.0.0.0`      | Interface to listen on                                                                      |
+| `PSI_API_KEY`           | —              | Google PageSpeed Insights key (adds real-user data)                                         |
+| `GLOBALPING_TOKEN`      | —              | Globalping token (higher probe limits)                                                      |
+| `WPT_API_KEY`           | —              | Enables WebPageTest real-browser runs                                                       |
+| `LIGHTHOUSE_MODE`       | `auto`         | `auto` (PageSpeed Insights, then local), `psi`, `local` or `off`                            |
+| `CHROME_PATH`           | auto-detected  | Chrome/Chromium binary for local Lighthouse                                                 |
+| `RATE_LIMIT_PER_HOUR`   | `10`           | Tests each client IP may start per hour (`0` = unlimited)                                   |
+| `MAX_CONCURRENT_JOBS`   | `3`            | Tests running at the same time                                                              |
+| `PUBLIC_HISTORY`        | `false`        | Show every visitor a shared list of recent reports                                          |
+| `REPORT_RETENTION_DAYS` | `30`           | Delete reports older than this (`0` = keep forever)                                         |
+| `DATA_DIR`              | `data/reports` | Where reports are stored as JSON                                                            |
+| `TRUST_PROXY`           | `loopback`     | Set behind a reverse proxy (`true`, a hop count, or an address) so rate limits see real IPs |
+| `ALLOW_PRIVATE_TARGETS` | `false`        | Allow testing private/local addresses (trusted networks only)                               |
 
-- **Global delivery (0–100)** — Lighthouse-style log-normal score of time to first byte per location
-  (200 ms → 90, 600 ms → 50); failed locations count as 0.
-- **Overall grade** — 45% mobile performance, 20% desktop performance, 35% global delivery
-  (re-weighted when a part is unavailable). A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, E ≥ 50, else F.
-- Location status uses the Web Vitals TTFB thresholds: good ≤ 800 ms, poor > 1.8 s.
+## Hosting a public instance
+
+Meridian runs anywhere that runs a Docker image: a VPS, Fly.io, Render, Railway, Google Cloud Run and so on.
+
+- **Resources:** at least 1 vCPU and 1–2 GB RAM. Local Lighthouse runs one audit at a time and uses most of a CPU while it runs.
+- **Shared memory:** give the container more than Docker's 64 MB default (`--shm-size=1g`, already set in `docker-compose.yml`).
+- **Persistence:** mount a volume at `/data` to keep reports across deploys.
+- **Reverse proxy and HTTPS:** terminate TLS in your proxy and set `TRUST_PROXY` (for example `1`) so rate limiting sees visitor IPs.
+- **Keys:** set `PSI_API_KEY` and `GLOBALPING_TOKEN` — probe quotas are shared by everyone using your instance.
+- **Health check:** `GET /api/health` returns `{ "ok": true }`.
+
+What a public instance does by default:
+
+- Only public `http(s)` URLs can be tested. Private and local addresses are refused, and the server's headless browser
+  is blocked from requesting private IP ranges.
+- Each client can start 10 tests per hour, one at a time.
+- Visitors see only the reports run from their own browser. Report links are unguessable, and `robots.txt` keeps
+  reports out of search engines.
+- Reports are deleted after 30 days.
+- Responses carry a strict Content Security Policy and other security headers.
+
+## Reading a report
+
+**Overall grade** blends mobile Lighthouse performance (45%), desktop performance (20%) and **global delivery** (35%).
+Global delivery scores the first-byte time from every tested city: 200 ms scores 90, 600 ms scores 50, and a city
+that fails scores 0. When a part is unavailable the others are re-weighted. A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, E ≥ 50,
+otherwise F.
+
+**City colours** follow the Web Vitals time-to-first-byte thresholds: good ≤ 800 ms, poor > 1.8 s.
+
+**Severity**
+
+|          | Meaning                               | Examples                                                                                                 |
+| -------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Critical | Broken or very slow for real visitors | Unreachable from a region; first byte over 1.8 s; certificate expiring within a week; poor real-user LCP |
+| High     | Large, measurable slowdown            | No CDN for a global audience; HTML not compressed; redirect chains; no HTTP/2; ~0.8 s+ of savings        |
+| Medium   | Worth fixing soon                     | HTML not cached at the CDN edge; slow DNS; unoptimised images; render-blocking scripts                   |
+| Low      | Good practice                         | Brotli instead of gzip; HTTP/3; HSTS                                                                     |
 
 ## API
 
-| Method | Path             | Description                                                                                                    |
-| ------ | ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| `GET`  | `/api/config`    | Location catalogue, regions and server capabilities                                                            |
-| `POST` | `/api/tests`     | Start a test: `{ "url": "example.com", "locations": ["london", "sydney"], "lighthouse": true }` → `202 { id }` |
-| `GET`  | `/api/tests/:id` | Report (poll while `status` is `running`)                                                                      |
-| `GET`  | `/api/tests`     | Recent reports                                                                                                 |
+The UI is built on a small JSON API you can script against.
 
-## Project layout
+| Method | Path             | Description                                                                                                                        |
+| ------ | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `POST` | `/api/tests`     | Start a test. Body: `{ "url": "example.com", "locations": ["london", "sydney"], "lighthouse": true }`. Returns `202 { "id": "…" }` |
+| `GET`  | `/api/tests/:id` | The report. Poll until `status` is `complete` or `failed`                                                                          |
+| `GET`  | `/api/config`    | Available locations, regions and server capabilities                                                                               |
+| `GET`  | `/api/health`    | Health check                                                                                                                       |
+| `GET`  | `/api/tests`     | Recent reports (only when `PUBLIC_HISTORY=true`)                                                                                   |
+
+```bash
+id=$(curl -s -X POST http://localhost:8787/api/tests -H 'content-type: application/json' \
+  -d '{"url":"example.com","locations":["london","frankfurt","sydney"]}' | jq -r .id)
+curl -s http://localhost:8787/api/tests/$id | jq '.status, .scores, [.recommendations[].title]'
+```
+
+Location ids are listed by `/api/config` — for example `london`, `frankfurt`, `new-york`, `sao-paulo`,
+`johannesburg`, `mumbai`, `singapore`, `tokyo` and `sydney`. Leave `locations` out to use the recommended 20-city set.
+
+## How it works
+
+```
+                   ┌─ Globalping ── cold + warm HTTP and ping from each city ─┐
+ URL ─► inspect ──►├─ Lighthouse ── PageSpeed Insights, else local Chrome ────┼──► analyse ──► report
+                   └─ WebPageTest ─ optional real-browser loads ──────────────┘    scores, stats,
+                                                                                    ranked fixes
+```
+
+1. **Inspect** — the server fetches the page itself, recording redirects, headers, protocol support and HTML structure.
+2. **Measure** — in parallel: Globalping requests the page from one probe per city, repeats it from the same probes
+   (warm caches) and pings them; Lighthouse audits mobile and desktop; WebPageTest runs if configured.
+3. **Analyse** — rules turn every measurement into findings, merge duplicates across tools, and rank them.
+
+More detail in [`docs/architecture.md`](docs/architecture.md).
+
+## Development
+
+```bash
+npm run dev           # API + UI with hot reload
+npm test              # unit and API tests (Vitest)
+npm run typecheck
+npm run format        # Prettier
+npm run check         # format check + typecheck + tests, as CI runs them
+npm run build:dots    # regenerate the dot-matrix world map
+```
 
 ```
 server/
-  providers/      one module per data source (Globalping, PSI, local Lighthouse, inspector, WebPageTest)
-  analysis/       pure functions: scoring, HTML/CDN analysis, Lighthouse normalisation, recommendation rules
-  security/       SSRF guard — only public http(s) targets are tested
-  jobs.ts         orchestration and step progress
-  storage.ts      JSON report store
-shared/           types and thresholds used by server and browser
-src/              React UI (Vite)
-tests/            Vitest unit and API tests, with recorded Globalping and Lighthouse fixtures
-docs/             design notes and implementation plan
+  providers/     one module per data source (Globalping, PSI, local Lighthouse, inspector, WebPageTest)
+  analysis/      pure functions: scoring, HTML/CDN analysis, Lighthouse normalisation
+    rules/       recommendation rules per source (network, page, Lighthouse, real-user)
+  security/      URL/SSRF guard and rate limiter
+  jobs.ts        runs a test and records its progress
+  app.ts         HTTP API and static file serving
+shared/          types and thresholds shared by server and browser
+src/             React UI (Vite)
+tests/           Vitest tests, with recorded Globalping and Lighthouse fixtures
 ```
 
-```bash
-npm test            # unit + API tests
-npm run typecheck
-npm run build:dots  # regenerate the dot-matrix world map
-```
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Limits worth knowing
+## Limitations
 
-- Globalping measures the **HTML document** from each city (DNS → download). Full page loads with
-  rendering come from Lighthouse (from where the server or Google runs it) and, optionally, WebPageTest.
-- Anonymous Globalping use allows 250 probe measurements per hour per IP; a default 20-city test uses 60.
-  A free token raises this.
-- Without `PSI_API_KEY`, Google usually rate-limits anonymous PageSpeed Insights calls, so Lighthouse
-  runs locally and real-user (CrUX) data is not available.
-- Private and local network addresses are refused unless `ALLOW_PRIVATE_TARGETS=true`, and local Lighthouse
-  runs block requests to private IP ranges so a tested page cannot reach internal services.
+- Globalping measures the **HTML document** from each city (DNS through download). Full page rendering comes from
+  Lighthouse, which runs from wherever your server (or Google) is; WebPageTest adds real-browser loads per region.
+- Probes are real machines on real networks, so individual results vary. Run a test twice before drawing conclusions
+  from a single city.
+- Pages behind logins, bot protection or geo-blocking may fail or be measured differently.
+
+## Security
+
+Please report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE). Meridian is not affiliated with Globalping, Google or WebPageTest; it uses their public APIs.

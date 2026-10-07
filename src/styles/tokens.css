@@ -1,0 +1,125 @@
+/* Design tokens. Colours are defined once per theme; components use roles only. */
+
+:root {
+  color-scheme: light;
+
+  --font-sans: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Surfaces & ink */
+  --bg: #f6f5f1;
+  --surface: #fcfcfb;
+  --surface-2: #f1f0eb;
+  --surface-3: #e9e7e0;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #6b6a65;
+  --muted: #898781;
+  --line: #e4e2db;
+  --line-strong: #c3c2b7;
+  --ring: rgba(11, 11, 11, 0.1);
+
+  /* Brand accent — chrome only, never data */
+  --accent: #4b3fd1;
+  --accent-hover: #3d32b8;
+  --accent-ink: #ffffff;
+  --accent-soft: #ecebfb;
+
+  /* Status — reserved, always paired with an icon and label */
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --good-text: #006300;
+  --critical-text: #b42c2c;
+  --good-soft: #e3f4e1;
+  --warning-soft: #fdf1d3;
+  --serious-soft: #fbe6dc;
+  --critical-soft: #f8e0df;
+
+  /* Categorical data series (validated order) */
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
+  --s5: #e87ba4;
+
+  /* Map */
+  --land: #d9d7cf;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 4px 16px rgba(11, 11, 11, 0.04);
+  --shadow-pop: 0 8px 32px rgba(11, 11, 11, 0.14);
+  --gutter: clamp(16px, 4vw, 40px);
+  --max: 1240px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #222220;
+    --surface-3: #2c2c2a;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --ink-3: #a3a29a;
+    --muted: #898781;
+    --line: #2c2c2a;
+    --line-strong: #383835;
+    --ring: rgba(255, 255, 255, 0.1);
+    --accent: #9a8cff;
+    --accent-hover: #b0a6ff;
+    --accent-ink: #0d0d0d;
+    --accent-soft: #24213d;
+    --good-text: #0ca30c;
+    --critical-text: #e66767;
+    --good-soft: #142a14;
+    --warning-soft: #33290f;
+    --serious-soft: #3a2218;
+    --critical-soft: #3a1919;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
+    --s5: #d55181;
+    --land: #2e2e2b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d0d0d;
+  --surface: #1a1a19;
+  --surface-2: #222220;
+  --surface-3: #2c2c2a;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --ink-3: #a3a29a;
+  --muted: #898781;
+  --line: #2c2c2a;
+  --line-strong: #383835;
+  --ring: rgba(255, 255, 255, 0.1);
+  --accent: #9a8cff;
+  --accent-hover: #b0a6ff;
+  --accent-ink: #0d0d0d;
+  --accent-soft: #24213d;
+  --good-text: #0ca30c;
+  --critical-text: #e66767;
+  --good-soft: #142a14;
+  --warning-soft: #33290f;
+  --serious-soft: #3a2218;
+  --critical-soft: #3a1919;
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --s4: #c98500;
+  --s5: #d55181;
+  --land: #2e2e2b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6);
+}

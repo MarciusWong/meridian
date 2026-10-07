@@ -1,0 +1,36 @@
+name: Bug report
+description: Something doesn't work or a result looks wrong
+labels: [bug]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: URL tested
+      description: The page you tested, if you can share it.
+      placeholder: https://example.com
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you expected, and what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Report JSON or screenshot
+      description: The report's JSON export (Report → JSON) helps a lot. Paste or attach it.
+  - type: dropdown
+    id: running
+    attributes:
+      label: How are you running Meridian?
+      options:
+        - Docker / docker compose
+        - npm start
+        - npm run dev
+        - A hosted instance
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: From `GET /api/health`, or the commit you're on.

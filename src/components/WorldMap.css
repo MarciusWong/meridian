@@ -1,0 +1,127 @@
+.world-map {
+  position: relative;
+  width: 100%;
+}
+
+.world-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.world-map-land {
+  fill: var(--land);
+}
+
+.marker {
+  cursor: default;
+  outline: none;
+}
+
+.marker-interactive {
+  cursor: pointer;
+}
+
+.marker-hit {
+  fill: transparent;
+}
+
+.marker-dot {
+  stroke: var(--surface);
+  stroke-width: 2;
+  transition:
+    r 0.15s,
+    fill 0.15s;
+}
+
+.marker-good .marker-dot {
+  fill: var(--good);
+}
+.marker-needs-improvement .marker-dot {
+  fill: var(--warning);
+}
+.marker-poor .marker-dot {
+  fill: var(--critical);
+}
+.marker-failed .marker-dot {
+  fill: var(--critical);
+}
+.marker-pending .marker-dot {
+  fill: var(--accent);
+}
+.marker-selected .marker-dot {
+  fill: var(--ink);
+}
+
+.marker-unselected .marker-dot {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+.marker-interactive:hover .marker-dot,
+.marker:focus-visible .marker-dot {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.marker-x {
+  stroke: #fff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.marker-pulse {
+  fill: var(--accent);
+  opacity: 0.35;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: marker-pulse 1.8s ease-out infinite;
+}
+
+@keyframes marker-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.marker-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* The map scales down ~3x on phones; scale markers up so they stay legible and tappable. */
+@media (max-width: 640px) {
+  .marker-dot {
+    r: 11px;
+    stroke-width: 3;
+  }
+  .marker-unselected .marker-dot {
+    r: 8px;
+    stroke-width: 2.5;
+  }
+  .marker-hit {
+    r: 26px;
+  }
+  .marker-label {
+    font-size: 26px;
+    stroke-width: 7px;
+  }
+  .marker-x {
+    transform: scale(1.8);
+    stroke-width: 1.4;
+  }
+}

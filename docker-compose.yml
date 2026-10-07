@@ -1,0 +1,18 @@
+services:
+  meridian:
+    build: .
+    image: meridian
+    ports:
+      - '8787:8787'
+    # Optional API keys and limits — see .env.example.
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - meridian-data:/data
+    restart: unless-stopped
+    # Chromium is happier with more shared memory than Docker's 64 MB default.
+    shm_size: '1gb'
+
+volumes:
+  meridian-data:

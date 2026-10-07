@@ -1,6 +1,7 @@
 // Findings from the Globalping measurements: how the site performs from each city.
 
 import type { HttpProbeRun, LocationResult } from '../../../shared/types';
+import { detectCdn } from '../pageAnalysis';
 import { locationTtfb, median } from '../scoring';
 import { formatMs, type AnalysisInput, type Finding, type Rule } from './types';
 
@@ -17,6 +18,23 @@ function okResults(input: AnalysisInput): LocationResult[] {
 
 function representativeRun(r: LocationResult): HttpProbeRun | null {
   return r.warm && !r.warm.error ? r.warm : r.cold;
+}
+
+const UNNAMED_CDN = 'CDN';
+
+/**
+ * The CDN in front of the site: named from the inspector's or the probes'
+ * response headers, or a generic label when probes saw cache statuses from a
+ * caching layer we cannot identify.
+ */
+function cdnName(input: AnalysisInput): string | null {
+  if (input.inspection?.cdn) return input.inspection.cdn;
+  const results = okResults(input);
+  for (const r of results) {
+    const named = detectCdn(r.headers);
+    if (named) return named;
+  }
+  return results.some((r) => representativeRun(r)?.cacheStatus) ? UNNAMED_CDN : null;
 }
 
 const locationFailures: Rule = (input) => {
@@ -47,7 +65,7 @@ const slowTtfb: Rule = (input) => {
     .sort((a, b) => b.ttfb - a.ttfb);
   if (slow.length === 0) return [];
   const verySlow = slow.filter((s) => s.ttfb > VERY_SLOW_TTFB);
-  const cdn = input.inspection?.cdn;
+  const cdn = cdnName(input);
   return [{
     id: 'slow-ttfb',
     title: `Slow first byte in ${slow.length} location${slow.length > 1 ? 's' : ''}`,
@@ -57,7 +75,7 @@ const slowTtfb: Rule = (input) => {
     evidence: slow.map((s) => `${cityOf(input, s.id)}: ${formatMs(s.ttfb)} to first byte`),
     fixes: [
       cdn
-        ? `Make sure ${cdn} caches the HTML itself, not only static assets, so these regions are answered from a nearby edge.`
+        ? `Make sure ${cdn === UNNAMED_CDN ? 'your CDN' : cdn} caches the HTML itself, not only static assets, so these regions are answered from a nearby edge.`
         : 'Put the site behind a CDN with points of presence near these regions.',
       'Cache rendered pages (full-page cache) so the origin does not rebuild the HTML for each request.',
       'If the content must be dynamic, consider running the app or a read replica in an additional region close to these users.',
@@ -82,7 +100,7 @@ function spread(input: AnalysisInput): { fastest: number; slowest: number; slowI
 }
 
 const useCdn: Rule = (input) => {
-  if (!input.inspection || input.inspection.cdn) return [];
+  if (cdnName(input)) return [];
   const s = spread(input);
   if (!s || s.slowest < 600 || s.slowest / s.fastest < 3) return [];
   return [{
@@ -112,7 +130,7 @@ const useCdn: Rule = (input) => {
 const UNCACHED = new Set(['MISS', 'DYNAMIC', 'BYPASS', 'EXPIRED', 'PASS']);
 
 const edgeCacheHtml: Rule = (input) => {
-  const cdn = input.inspection?.cdn;
+  const cdn = cdnName(input);
   if (!cdn) return [];
   const results = okResults(input);
   const statuses = results.map((r) => ({ id: r.locationId, status: representativeRun(r)?.cacheStatus ?? null, ttfb: locationTtfb(r) }));
@@ -125,13 +143,13 @@ const edgeCacheHtml: Rule = (input) => {
     title: `Cache the HTML at the ${cdn} edge`,
     severity: slowest > SLOW_TTFB ? 'high' : 'medium',
     category: 'Caching',
-    summary: `${cdn} is in front of the site, but the page itself was not served from its cache in ${misses.length} of ${known.length} locations, even on a repeat request. Each of those requests travelled to the origin.`,
+    summary: `${cdn === UNNAMED_CDN ? 'A CDN or caching proxy' : cdn} is in front of the site, but the page itself was not served from its cache in ${misses.length} of ${known.length} locations, even on a repeat request. Each of those requests travelled to the origin.`,
     evidence: misses.map((m) => `${cityOf(input, m.id)}: cache ${m.status}${m.ttfb !== null ? `, ${formatMs(m.ttfb)} to first byte` : ''}`),
     fixes: [
       'Send a shared-cache lifetime for HTML, e.g. Cache-Control: public, max-age=0, s-maxage=300, stale-while-revalidate=86400.',
       cdn === 'Cloudflare'
         ? 'In Cloudflare, add a Cache Rule that marks HTML as eligible for cache (HTML is "DYNAMIC" by default), bypassing it only for logged-in sessions.'
-        : `Add a ${cdn} cache rule that caches HTML responses, bypassing only for logged-in or personalised sessions.`,
+        : `Add a ${cdn === UNNAMED_CDN ? 'CDN' : cdn} cache rule that caches HTML responses, bypassing only for logged-in or personalised sessions.`,
       'Avoid Set-Cookie and Vary: Cookie on anonymous page views — both usually prevent edge caching.',
       'Purge the cache on deploy or content change instead of keeping lifetimes short.',
     ],

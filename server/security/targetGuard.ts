@@ -11,7 +11,10 @@ export function normaliseUrl(input: string): string {
   const raw = (input ?? '').trim();
   if (!raw) throw new TargetError('Enter a URL to test.');
 
-  const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(raw) ? raw : `https://${raw}`;
+  // "example.com:8443" looks like a scheme to the URL parser; only treat input as
+  // having a scheme when it has "//" or is a known non-network scheme.
+  const hasScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) || /^(javascript|data|mailto|file|about|blob|vbscript):/i.test(raw);
+  const withScheme = hasScheme ? raw : `https://${raw}`;
   let url: URL;
   try {
     url = new URL(withScheme);

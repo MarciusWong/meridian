@@ -24,12 +24,12 @@ describe('buildHttpRequest', () => {
     expect(body).toMatchObject({
       type: 'http',
       target: 'shop.example.com',
-      limit: 2,
       measurementOptions: {
         protocol: 'HTTPS',
         request: { method: 'GET', path: '/products', query: 'id=7' },
       },
     });
+    expect(body).not.toHaveProperty('limit'); // not allowed alongside per-location limits
     expect(body.locations).toEqual([
       { city: 'London', country: 'GB', limit: 1 },
       { city: 'Sydney', country: 'AU', limit: 1 },

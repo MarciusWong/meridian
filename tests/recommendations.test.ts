@@ -99,6 +99,19 @@ describe('buildRecommendations', () => {
     expect(find(recs, 'edge-cache-html')).toBeUndefined();
   });
 
+  it('does not recommend a CDN when probes see a caching layer the inspector could not name', () => {
+    const network = [net('london', 90, { cache: 'HIT' }), net('frankfurt', 110, { cache: 'HIT' }), net('new-york', 450, { cache: 'MISS' }), net('sydney', 1100, { cache: 'MISS' }), net('singapore', 950, { cache: 'MISS' })];
+    const recs = buildRecommendations(input({ network, inspection: inspection({ cdn: null }) }));
+    expect(find(recs, 'use-cdn')).toBeUndefined();
+    expect(find(recs, 'edge-cache-html')?.title).toMatch(/CDN edge/);
+  });
+
+  it('names the CDN from probe response headers when the inspector could not', () => {
+    const network = ids.map((id) => ({ ...net(id, 400, { cache: 'DYNAMIC' }), headers: { 'cf-ray': 'abc-LHR' } }));
+    const recs = buildRecommendations(input({ network, inspection: inspection({ cdn: null }) }));
+    expect(find(recs, 'edge-cache-html')?.title).toContain('Cloudflare');
+  });
+
   it('recommends edge caching when a CDN is present but HTML misses the cache', () => {
     const network = ids.map((id, i) => net(id, 300 + i * 150, { cache: 'DYNAMIC' }));
     const recs = buildRecommendations(input({ network }));

@@ -8,6 +8,10 @@ describe('normaliseUrl', () => {
   it('keeps http and path/query but drops the fragment', () => {
     expect(normaliseUrl('http://example.com/a?b=1#c')).toBe('http://example.com/a?b=1');
   });
+  it('treats host:port input as a host, not a scheme', () => {
+    expect(normaliseUrl('example.com:8443/path')).toBe('https://example.com:8443/path');
+    expect(() => normaliseUrl('localhost:8080')).toThrow(/public domain/);
+  });
   it('trims whitespace', () => {
     expect(normaliseUrl('  https://example.com  ')).toBe('https://example.com/');
   });

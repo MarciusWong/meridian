@@ -46,7 +46,6 @@ export interface GpMeasurement {
 export interface GpHttpRequest {
   type: 'http';
   target: string;
-  limit: number;
   locations: Array<{ city: string; country: string; limit: number }> | string;
   measurementOptions: {
     protocol: 'HTTP' | 'HTTPS';
@@ -63,7 +62,6 @@ export function buildHttpRequest(url: string, locations: TestLocation[], reuseMe
   return {
     type: 'http',
     target: parsed.hostname,
-    limit: locations.length,
     locations: reuseMeasurementId ?? locations.map((l) => ({ city: l.city, country: l.country, limit: 1 })),
     measurementOptions: {
       protocol: parsed.protocol === 'http:' ? 'HTTP' : 'HTTPS',

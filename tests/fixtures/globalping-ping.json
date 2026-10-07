@@ -1,0 +1,67 @@
+{
+ "id": "2B1DbY6gIqeUoOXsx00021H5E",
+ "type": "ping",
+ "status": "finished",
+ "createdAt": "2026-10-07T19:12:21.572Z",
+ "updatedAt": "2026-10-07T19:12:22.680Z",
+ "target": "example.com",
+ "probesCount": 1,
+ "locations": [
+  {
+   "magic": "London"
+  },
+  {
+   "magic": "Zzyzxville"
+  }
+ ],
+ "results": [
+  {
+   "probe": {
+    "continent": "EU",
+    "region": "Northern Europe",
+    "country": "GB",
+    "state": null,
+    "city": "London",
+    "asn": 16276,
+    "longitude": 0.08,
+    "latitude": 51.53,
+    "network": "OVH",
+    "tags": [
+     "datacenter-network",
+     "u-flyncodes"
+    ],
+    "resolvers": [
+     "private"
+    ]
+   },
+   "result": {
+    "status": "finished",
+    "resolvedAddress": "172.66.147.243",
+    "resolvedHostname": "example.com",
+    "timings": [
+     {
+      "ttl": 50,
+      "rtt": 1.57
+     },
+     {
+      "ttl": 50,
+      "rtt": 1.54
+     },
+     {
+      "ttl": 50,
+      "rtt": 1.58
+     }
+    ],
+    "stats": {
+     "min": 1.536,
+     "max": 1.578,
+     "avg": 1.56,
+     "total": 3,
+     "loss": 0,
+     "rcv": 3,
+     "drop": 0
+    }
+   }
+  }
+ ]
+}

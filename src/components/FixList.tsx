@@ -6,7 +6,19 @@ import { SeverityBadge } from './Badges';
 import { Icon } from './Icon';
 import './FixList.css';
 
-function FixCard({ rec, rank, open, onToggle, cityOf }: { rec: Recommendation; rank: number; open: boolean; onToggle: () => void; cityOf: (id: string) => string }) {
+function FixCard({
+  rec,
+  rank,
+  open,
+  onToggle,
+  cityOf,
+}: {
+  rec: Recommendation;
+  rank: number;
+  open: boolean;
+  onToggle: () => void;
+  cityOf: (id: string) => string;
+}) {
   const bodyId = `fix-${rec.id}`;
   return (
     <li className={`fix fix-${rec.severity}${open ? ' fix-open' : ''}`}>
@@ -17,9 +29,21 @@ function FixCard({ rec, rank, open, onToggle, cityOf }: { rec: Recommendation; r
           <span className="fix-meta">
             <SeverityBadge severity={rec.severity} />
             <span className="fix-category">{rec.category}</span>
-            {rec.impactMs ? <span className="pill"><Icon name="clock" /> ~{formatMs(rec.impactMs)}</span> : null}
-            {rec.impactBytes ? <span className="pill"><Icon name="layers" /> {formatBytes(rec.impactBytes)}</span> : null}
-            {rec.locations?.length ? <span className="pill"><Icon name="globe" /> {rec.locations.length} location{rec.locations.length > 1 ? 's' : ''}</span> : null}
+            {rec.impactMs ? (
+              <span className="pill">
+                <Icon name="clock" /> ~{formatMs(rec.impactMs)}
+              </span>
+            ) : null}
+            {rec.impactBytes ? (
+              <span className="pill">
+                <Icon name="layers" /> {formatBytes(rec.impactBytes)}
+              </span>
+            ) : null}
+            {rec.locations?.length ? (
+              <span className="pill">
+                <Icon name="globe" /> {rec.locations.length} location{rec.locations.length > 1 ? 's' : ''}
+              </span>
+            ) : null}
           </span>
         </span>
         <Icon name="chevronDown" className="fix-chevron" />
@@ -28,7 +52,7 @@ function FixCard({ rec, rank, open, onToggle, cityOf }: { rec: Recommendation; r
         <p className="fix-summary">{rec.summary}</p>
         <div className="fix-columns">
           <div>
-            <h4 className="eyebrow">How to fix</h4>
+            <h3 className="eyebrow">How to fix</h3>
             <ol className="fix-steps">
               {rec.fixes.map((f) => (
                 <li key={f}>{renderInlineCode(f)}</li>
@@ -36,23 +60,23 @@ function FixCard({ rec, rank, open, onToggle, cityOf }: { rec: Recommendation; r
             </ol>
           </div>
           <div>
-            <h4 className="eyebrow">Evidence</h4>
+            <h3 className="eyebrow">Evidence</h3>
             <ul className="fix-evidence">
               {rec.evidence.slice(0, 8).map((e) => (
-                <li key={e} className="mono">{e}</li>
+                <li key={e} className="mono">
+                  {e}
+                </li>
               ))}
               {rec.evidence.length > 8 && <li className="fix-more">+ {rec.evidence.length - 8} more</li>}
             </ul>
-            {rec.locations?.length ? (
-              <p className="fix-locations">Affects: {rec.locations.map(cityOf).join(', ')}</p>
-            ) : null}
+            {rec.locations?.length ? <p className="fix-locations">Affects: {rec.locations.map(cityOf).join(', ')}</p> : null}
           </div>
         </div>
         <div className="fix-foot">
           <span>Found by {rec.sources.join(' + ')}</span>
           {rec.learnMoreUrl && (
             <a href={rec.learnMoreUrl} target="_blank" rel="noreferrer">
-              Learn more <Icon name="external" />
+              Learn more<span className="sr-only"> about {rec.title.toLowerCase()}</span> <Icon name="external" />
             </a>
           )}
         </div>
@@ -63,9 +87,11 @@ function FixCard({ rec, rank, open, onToggle, cityOf }: { rec: Recommendation; r
 
 /** Renders `code` spans from the curated fix text. */
 function renderInlineCode(text: string) {
-  return text.split(/(`[^`]+`)/g).map((part, i) =>
-    part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> : <span key={i}>{part}</span>,
-  );
+  return text
+    .split(/(`[^`]+`)/g)
+    .map((part, i) =>
+      part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> : <span key={i}>{part}</span>,
+    );
 }
 
 export function FixList({ report }: { report: Report }) {
@@ -77,7 +103,10 @@ export function FixList({ report }: { report: Report }) {
 
   const categories = useMemo(() => [...new Set(recs.map((r) => r.category))].sort(), [recs]);
   const visible = recs.filter((r) => severities.has(r.severity) && (category === 'all' || r.category === category));
-  const counts = Object.fromEntries(SEVERITY_ORDER.map((s) => [s, recs.filter((r) => r.severity === s).length])) as Record<Severity, number>;
+  const counts = Object.fromEntries(SEVERITY_ORDER.map((s) => [s, recs.filter((r) => r.severity === s).length])) as Record<
+    Severity,
+    number
+  >;
   const cityOf = (id: string) => report.locations.find((l) => l.id === id)?.city ?? id;
 
   const toggleSeverity = (s: Severity) => {
@@ -138,23 +167,41 @@ export function FixList({ report }: { report: Report }) {
         <>
           <div className="fix-filters no-print" role="group" aria-label="Filter fixes">
             {SEVERITY_ORDER.map((s) => (
-              <button key={s} type="button" className="filter-chip" aria-pressed={severities.has(s)} onClick={() => toggleSeverity(s)} disabled={!counts[s]}>
+              <button
+                key={s}
+                type="button"
+                className="filter-chip"
+                aria-pressed={severities.has(s)}
+                onClick={() => toggleSeverity(s)}
+                disabled={!counts[s]}
+              >
                 <Icon name={s} className={`filter-icon-${s}`} />
                 {SEVERITY_LABEL[s]}
                 <span className="tabular filter-count">{counts[s]}</span>
               </button>
             ))}
-            <label className="sr-only" htmlFor="fix-category">Category</label>
+            <label className="sr-only" htmlFor="fix-category">
+              Category
+            </label>
             <select id="fix-category" className="select" value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="all">All categories</option>
               {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </div>
           <ol className="fix-list">
             {visible.map((rec) => (
-              <FixCard key={rec.id} rec={rec} rank={recs.indexOf(rec) + 1} open={open.has(rec.id)} onToggle={() => toggleOpen(rec.id)} cityOf={cityOf} />
+              <FixCard
+                key={rec.id}
+                rec={rec}
+                rank={recs.indexOf(rec) + 1}
+                open={open.has(rec.id)}
+                onToggle={() => toggleOpen(rec.id)}
+                cityOf={cityOf}
+              />
             ))}
           </ol>
           {visible.length === 0 && <p className="fix-none">No fixes match these filters.</p>}

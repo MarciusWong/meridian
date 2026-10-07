@@ -7,6 +7,7 @@ import { GlobalpingClient, measureGlobally } from './providers/globalping';
 import { runLighthouse } from './providers/lighthouseRunner';
 import { inspectPage } from './providers/pageInspector';
 import { runWebPageTest } from './providers/webpagetest';
+import { RateLimiter } from './security/rateLimit';
 import { assertPublicTarget } from './security/targetGuard';
 import { ReportStore } from './storage';
 
@@ -30,17 +31,43 @@ if (config.lighthouseMode === 'off') {
   };
 }
 
-const manager = new JobManager(providers, new ReportStore(path.resolve(root, config.dataDir)), {
-  maxConcurrentJobs: config.maxConcurrentJobs,
+const store = new ReportStore(path.resolve(root, config.dataDir));
+const prune = () => {
+  const removed = store.prune(config.reportRetentionDays);
+  if (removed) console.log(`Removed ${removed} report(s) older than ${config.reportRetentionDays} days.`);
+};
+prune();
+setInterval(prune, 6 * 60 * 60 * 1000).unref();
+
+const manager = new JobManager(providers, store, { maxConcurrentJobs: config.maxConcurrentJobs });
+
+const app = createApp(manager, {
+  staticDir: process.env.NODE_ENV === 'production' ? path.join(root, 'dist') : undefined,
+  rateLimiter: new RateLimiter({ limit: config.rateLimitPerHour, windowMs: 60 * 60 * 1000 }),
+  publicHistory: config.publicHistory,
+  trustProxy: config.trustProxy,
 });
 
-const staticDir = process.env.NODE_ENV === 'production' ? path.join(root, 'dist') : undefined;
-
-createApp(manager, staticDir).listen(config.port, () => {
-  console.log(`Global PageSpeed API listening on http://localhost:${config.port}`);
+const server = app.listen(config.port, config.host, () => {
+  const lighthouse =
+    config.lighthouseMode === 'off'
+      ? 'off'
+      : `${config.lighthouseMode}${config.psiApiKey ? ', PageSpeed Insights key set' : ''}${config.chromePath ? `, local Chrome at ${config.chromePath}` : ', no local Chrome found'}`;
+  console.log(`Meridian listening on http://localhost:${config.port}`);
+  console.log(`  Lighthouse: ${lighthouse}`);
   console.log(
-    `  Lighthouse: ${config.lighthouseMode}${config.psiApiKey ? ' (PSI key set)' : ''}` +
-      `${config.chromePath ? ` · local Chrome: ${config.chromePath}` : ' · no local Chrome found'}` +
-      `${config.wptApiKey ? ' · WebPageTest enabled' : ''}`,
+    `  Globalping: ${config.globalpingToken ? 'token set' : 'anonymous (250 measurements/hour)'}${config.wptApiKey ? ' · WebPageTest enabled' : ''}`,
+  );
+  console.log(
+    `  Limits: ${config.rateLimitPerHour || 'unlimited'} tests/hour per client, ${config.maxConcurrentJobs} concurrent`,
   );
 });
+
+function shutdown(signal: string) {
+  console.log(`${signal} received, shutting down…`);
+  server.close(() => process.exit(0));
+  // Running tests can take a minute; don't hang deploys forever.
+  setTimeout(() => process.exit(0), 10_000).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

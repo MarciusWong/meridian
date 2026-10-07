@@ -10,7 +10,10 @@ describe('location catalogue', () => {
   it('covers every region in the default set', () => {
     const defaults = LOCATIONS.filter((l) => l.defaultSelected);
     for (const region of REGIONS) {
-      expect(defaults.some((l) => l.region === region.id), region.id).toBe(true);
+      expect(
+        defaults.some((l) => l.region === region.id),
+        region.id,
+      ).toBe(true);
     }
   });
 

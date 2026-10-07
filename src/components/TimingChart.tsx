@@ -29,7 +29,7 @@ export function TimingChart({ report }: { report: Report }) {
     const cityOf = new Map(report.locations.map((l) => [l.id, l]));
     return (report.network?.locations ?? [])
       .map((r) => {
-        const probe = run === 'warm' ? r.warm ?? r.cold : r.cold;
+        const probe = run === 'warm' ? (r.warm ?? r.cold) : r.cold;
         if (!probe || probe.error || r.status === 'no-probe') return null;
         const parts = SEGMENTS.map((s) => ({ ...s, value: Math.max(0, probe.timings[s.key] ?? 0) }));
         const total = parts.reduce((sum, p) => sum + p.value, 0);
@@ -51,12 +51,20 @@ export function TimingChart({ report }: { report: Report }) {
       <div className="tooltip-title">{row.city}</div>
       {row.parts.map((p) => (
         <div className="tooltip-row" key={p.key}>
-          <span><span className="key" style={{ background: p.color }} /> {p.label}</span>
+          <span>
+            <span className="key" style={{ background: p.color }} /> {p.label}
+          </span>
           <strong>{formatMs(p.value)}</strong>
         </div>
       ))}
-      <div className="tooltip-row tooltip-total">Total <strong>{formatMs(row.total)}</strong></div>
-      {row.cache && <div className="tooltip-row">CDN cache <strong>{row.cache}</strong></div>}
+      <div className="tooltip-row tooltip-total">
+        Total <strong>{formatMs(row.total)}</strong>
+      </div>
+      {row.cache && (
+        <div className="tooltip-row">
+          CDN cache <strong>{row.cache}</strong>
+        </div>
+      )}
     </>
   );
 
@@ -67,8 +75,8 @@ export function TimingChart({ report }: { report: Report }) {
           <div className="eyebrow">Where the time goes</div>
           <h2 id="timing-title">Request timing breakdown</h2>
           <p>
-            Each bar is one request for the HTML from that city. The cold request is a first visit; the warm one repeats it from the
-            same probe, so DNS and CDN caches are populated.
+            Each bar is one request for the HTML from that city. The cold request is a first visit; the warm one repeats it from
+            the same probe, so DNS and CDN caches are populated.
           </p>
         </div>
         <div className="segmented" role="group" aria-label="Request">
@@ -108,7 +116,10 @@ export function TimingChart({ report }: { report: Report }) {
                 aria-label={`${row.city}: ${row.parts.map((p) => `${p.label} ${formatMs(p.value)}`).join(', ')}; total ${formatMs(row.total)}`}
                 onPointerMove={(e) => tooltip.show(e.clientX, e.clientY, tooltipFor(row))}
                 onPointerLeave={tooltip.hide}
-                onFocus={(e) => { const a = anchorOf(e.currentTarget); tooltip.show(a.x, a.y, tooltipFor(row)); }}
+                onFocus={(e) => {
+                  const a = anchorOf(e.currentTarget);
+                  tooltip.show(a.x, a.y, tooltipFor(row));
+                }}
                 onBlur={tooltip.hide}
               >
                 <span className="timing-city">{row.city}</span>

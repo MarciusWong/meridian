@@ -24,10 +24,20 @@ function MarkerTooltip({ row }: { row: LocationRow }) {
       </div>
       {row.ttfb !== null && (
         <>
-          <div className="tooltip-row">First byte (warm) <strong>{formatMs(row.ttfb)}</strong></div>
-          <div className="tooltip-row">First byte (cold) <strong>{formatMs(r?.cold?.ttfb)}</strong></div>
-          <div className="tooltip-row">Round trip <strong>{formatMs(r?.rttMs)}</strong></div>
-          {row.run?.cacheStatus && <div className="tooltip-row">CDN cache <strong>{row.run.cacheStatus}</strong></div>}
+          <div className="tooltip-row">
+            First byte (warm) <strong>{formatMs(row.ttfb)}</strong>
+          </div>
+          <div className="tooltip-row">
+            First byte (cold) <strong>{formatMs(r?.cold?.ttfb)}</strong>
+          </div>
+          <div className="tooltip-row">
+            Round trip <strong>{formatMs(r?.rttMs)}</strong>
+          </div>
+          {row.run?.cacheStatus && (
+            <div className="tooltip-row">
+              CDN cache <strong>{row.run.cacheStatus}</strong>
+            </div>
+          )}
         </>
       )}
       {r?.error && <div className="tooltip-row tooltip-error">{r.error}</div>}
@@ -80,9 +90,18 @@ export function GlobalSection({ report, config }: { report: Report; config: AppC
             <>
               <WorldMap markers={markers} caption="Time to first byte from each test location" />
               <ul className="map-legend" aria-label="Legend">
-                <li><span className="legend-dot" style={{ background: 'var(--good)' }} /><Icon name="good" /> Good · ≤ 800 ms</li>
-                <li><span className="legend-dot" style={{ background: 'var(--warning)' }} /><Icon name="medium" /> Needs work · ≤ 1.8 s</li>
-                <li><span className="legend-dot" style={{ background: 'var(--critical)' }} /><Icon name="critical" /> Poor · &gt; 1.8 s</li>
+                <li>
+                  <span className="legend-dot" style={{ background: 'var(--good)' }} />
+                  <Icon name="good" /> Good · ≤ 800 ms
+                </li>
+                <li>
+                  <span className="legend-dot" style={{ background: 'var(--warning)' }} />
+                  <Icon name="medium" /> Needs work · ≤ 1.8 s
+                </li>
+                <li>
+                  <span className="legend-dot" style={{ background: 'var(--critical)' }} />
+                  <Icon name="critical" /> Poor · &gt; 1.8 s
+                </li>
                 <li>
                   <svg className="legend-failed" viewBox="-6 -6 12 12" aria-hidden="true">
                     <circle r="5.5" fill="var(--critical)" />
@@ -90,7 +109,9 @@ export function GlobalSection({ report, config }: { report: Report; config: AppC
                   </svg>
                   <Icon name="fail" /> Failed
                 </li>
-                <li><span className="legend-dot legend-dot-hollow" /> No probe</li>
+                <li>
+                  <span className="legend-dot legend-dot-hollow" /> No probe
+                </li>
               </ul>
             </>
           ) : (
@@ -116,7 +137,10 @@ export function GlobalSection({ report, config }: { report: Report; config: AppC
                   <div className="region-status">
                     {r.status ? <StatusBadge status={r.status} /> : <StatusBadge status="failed" label="No data" />}
                     <span className="region-cities">
-                      {rows.filter((row) => row.location.region === r.region).map((row) => row.location.city).join(', ')}
+                      {rows
+                        .filter((row) => row.location.region === r.region)
+                        .map((row) => row.location.city)
+                        .join(', ')}
                     </span>
                   </div>
                 </li>

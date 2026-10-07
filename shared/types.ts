@@ -1,13 +1,6 @@
 // Types shared by the server and the browser client.
 
-export type RegionId =
-  | 'north-america'
-  | 'south-america'
-  | 'europe'
-  | 'middle-east'
-  | 'africa'
-  | 'asia'
-  | 'oceania';
+export type RegionId = 'north-america' | 'south-america' | 'europe' | 'middle-east' | 'africa' | 'asia' | 'oceania';
 
 export interface TestLocation {
   id: string;
@@ -325,4 +318,6 @@ export interface ServerCapabilities {
   globalpingToken: boolean;
   webpagetest: boolean;
   localChrome: boolean;
+  /** When true, the server shares a list of recent reports with every visitor. */
+  publicHistory: boolean;
 }

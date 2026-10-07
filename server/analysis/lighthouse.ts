@@ -50,7 +50,10 @@ function toPercent(score: number | null | undefined): number | null {
 
 /** Lighthouse descriptions are markdown; keep the text of links and drop the URLs. */
 export function stripMarkdown(text: string): string {
-  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/`([^`]+)`/g, '$1').trim();
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .trim();
 }
 
 function plainSpaces(text: string | undefined): string | undefined {
@@ -75,7 +78,13 @@ function describeItem(item: unknown): string | null {
     }
     return null;
   };
-  const label = valueText(row.url) ?? valueText(row.source) ?? valueText(row.entity) ?? valueText(row.node) ?? valueText(row.label) ?? valueText(row.groupLabel);
+  const label =
+    valueText(row.url) ??
+    valueText(row.source) ??
+    valueText(row.entity) ??
+    valueText(row.node) ??
+    valueText(row.label) ??
+    valueText(row.groupLabel);
   if (!label) return null;
   const extras: string[] = [];
   if (typeof row.wastedBytes === 'number' && row.wastedBytes > 0) extras.push(`${formatBytes(row.wastedBytes)} wasted`);
@@ -92,9 +101,16 @@ function normaliseAudit(audit: RawAudit): LighthouseAudit {
     Object.entries(audit.metricSavings ?? {}).filter(([, v]) => typeof v === 'number' && v > 0),
   ) as LighthouseAudit['metricSavings'];
   const paintSavings = Math.max(0, metricSavings?.LCP ?? 0, metricSavings?.FCP ?? 0);
-  const savingsMs = details.overallSavingsMs && details.overallSavingsMs > 0 ? details.overallSavingsMs : paintSavings || undefined;
-  const wasted = items.reduce((sum: number, it) => sum + (typeof (it as { wastedBytes?: unknown })?.wastedBytes === 'number' ? (it as { wastedBytes: number }).wastedBytes : 0), 0);
-  const savingsBytes = details.overallSavingsBytes && details.overallSavingsBytes > 0 ? details.overallSavingsBytes : wasted || undefined;
+  const savingsMs =
+    details.overallSavingsMs && details.overallSavingsMs > 0 ? details.overallSavingsMs : paintSavings || undefined;
+  const wasted = items.reduce(
+    (sum: number, it) =>
+      sum +
+      (typeof (it as { wastedBytes?: unknown })?.wastedBytes === 'number' ? (it as { wastedBytes: number }).wastedBytes : 0),
+    0,
+  );
+  const savingsBytes =
+    details.overallSavingsBytes && details.overallSavingsBytes > 0 ? details.overallSavingsBytes : wasted || undefined;
 
   return {
     id: audit.id,
@@ -107,7 +123,10 @@ function normaliseAudit(audit: RawAudit): LighthouseAudit {
     savingsBytes: savingsBytes ? Math.round(savingsBytes) : undefined,
     metricSavings: metricSavings && Object.keys(metricSavings).length ? metricSavings : undefined,
     learnMoreUrl: audit.description?.match(/\]\((https?:\/\/[^)]+)\)/)?.[1],
-    items: items.map(describeItem).filter((s): s is string => Boolean(s)).slice(0, MAX_ITEMS),
+    items: items
+      .map(describeItem)
+      .filter((s): s is string => Boolean(s))
+      .slice(0, MAX_ITEMS),
   };
 }
 
@@ -122,7 +141,16 @@ export function normaliseLighthouse(lhr: RawLhr, source: LighthouseSummary['sour
   const metrics: LabMetric[] = METRICS.flatMap(({ id, audit, label, unit }) => {
     const raw = lhr.audits[audit];
     if (!raw || typeof raw.numericValue !== 'number') return [];
-    return [{ id, label, unit, value: raw.numericValue, displayValue: plainSpaces(raw.displayValue) ?? String(raw.numericValue), score: raw.score }];
+    return [
+      {
+        id,
+        label,
+        unit,
+        value: raw.numericValue,
+        displayValue: plainSpaces(raw.displayValue) ?? String(raw.numericValue),
+        score: raw.score,
+      },
+    ];
   });
 
   const resourceRows = lhr.audits['resource-summary']?.details?.items;
@@ -178,7 +206,10 @@ function cruxStatus(category: string | undefined): MetricStatus | null {
 }
 
 /** Prefers page-level CrUX data and falls back to origin-level data. */
-export function normaliseFieldData(page: RawLoadingExperience | undefined, origin: RawLoadingExperience | undefined): FieldData | null {
+export function normaliseFieldData(
+  page: RawLoadingExperience | undefined,
+  origin: RawLoadingExperience | undefined,
+): FieldData | null {
   const pick = (exp: RawLoadingExperience | undefined, scope: FieldData['scope']): FieldData | null => {
     const metrics = FIELD_METRICS.flatMap(({ id, key, label, unit, scale }) => {
       const m = exp?.metrics?.[key];

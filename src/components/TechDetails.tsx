@@ -31,18 +31,30 @@ export function TechDetails({ report }: { report: Report }) {
           <div className="card card-pad">
             <h3 className="tech-title">Delivery</h3>
             <dl className="tech-list">
-              <Row label="Final URL"><span className="mono">{i.finalUrl}</span></Row>
+              <Row label="Final URL">
+                <span className="mono">{i.finalUrl}</span>
+              </Row>
               <Row label="Status">{i.status}</Row>
               <Row label="Redirects">
                 {i.redirects.length === 0 ? 'None' : i.redirects.map((r) => `${r.status} ${r.url}`).join(' → ')}
               </Row>
               <Row label="CDN">{i.cdn ?? 'None detected'}</Row>
               <Row label="Server">{i.server ?? '—'}</Row>
-              <Row label="Protocol">{i.httpVersion === 'h2' ? 'HTTP/2' : i.httpVersion === 'http/1.1' ? 'HTTP/1.1' : 'Unknown'}{i.supportsHttp3 ? ' · HTTP/3 advertised' : ''}</Row>
-              <Row label="Compression">{i.compression ?? 'None'}{i.supportsBrotli ? ' · Brotli supported' : ''}</Row>
-              <Row label="Cache-Control"><span className="mono">{i.cacheControl ?? '—'}</span></Row>
+              <Row label="Protocol">
+                {i.httpVersion === 'h2' ? 'HTTP/2' : i.httpVersion === 'http/1.1' ? 'HTTP/1.1' : 'Unknown'}
+                {i.supportsHttp3 ? ' · HTTP/3 advertised' : ''}
+              </Row>
+              <Row label="Compression">
+                {i.compression ?? 'None'}
+                {i.supportsBrotli ? ' · Brotli supported' : ''}
+              </Row>
+              <Row label="Cache-Control">
+                <span className="mono">{i.cacheControl ?? '—'}</span>
+              </Row>
               <Row label="HSTS">{yesNo(i.hsts)}</Row>
-              <Row label="From test server">first byte {formatMs(i.ttfbMs)} · complete {formatMs(i.totalMs)}</Row>
+              <Row label="From test server">
+                first byte {formatMs(i.ttfbMs)} · complete {formatMs(i.totalMs)}
+              </Row>
             </dl>
           </div>
         )}
@@ -52,7 +64,9 @@ export function TechDetails({ report }: { report: Report }) {
               <h3 className="tech-title">TLS certificate</h3>
               <dl className="tech-list">
                 <Row label="Protocol">{tls.protocol ?? '—'}</Row>
-                <Row label="Cipher"><span className="mono">{tls.cipher ?? '—'}</span></Row>
+                <Row label="Cipher">
+                  <span className="mono">{tls.cipher ?? '—'}</span>
+                </Row>
                 <Row label="Issuer">{tls.issuer ?? '—'}</Row>
                 <Row label="Expires">{tls.expiresAt ? formatDate(tls.expiresAt) : '—'}</Row>
                 <Row label="Trusted">{yesNo(tls.authorized)}</Row>
@@ -65,11 +79,17 @@ export function TechDetails({ report }: { report: Report }) {
               <dl className="tech-list">
                 <Row label="Title">{html.title ?? '—'}</Row>
                 <Row label="Size (uncompressed)">{formatBytes(html.bytes)}</Row>
-                <Row label="Scripts / stylesheets">{html.scripts} / {html.stylesheets}</Row>
+                <Row label="Scripts / stylesheets">
+                  {html.scripts} / {html.stylesheets}
+                </Row>
                 <Row label="Render-blocking scripts">{html.renderBlockingScripts.length}</Row>
-                <Row label="Images">{html.images} ({html.imagesWithoutDimensions} unsized, {html.legacyImageFormats} legacy format)</Row>
+                <Row label="Images">
+                  {html.images} ({html.imagesWithoutDimensions} unsized, {html.legacyImageFormats} legacy format)
+                </Row>
                 <Row label="Third-party origins">{html.thirdPartyOrigins.length}</Row>
-                <Row label="Preconnect / preload">{html.preconnectOrigins.length} / {html.preloads}</Row>
+                <Row label="Preconnect / preload">
+                  {html.preconnectOrigins.length} / {html.preloads}
+                </Row>
               </dl>
             </>
           )}
@@ -122,7 +142,13 @@ export function WebPageTestTable({ report }: { report: Report }) {
                     <td className="num">{formatBytes(r.bytesIn)}</td>
                   </>
                 )}
-                <td>{r.testUrl && <a href={r.testUrl} target="_blank" rel="noreferrer">Details</a>}</td>
+                <td>
+                  {r.testUrl && (
+                    <a href={r.testUrl} target="_blank" rel="noreferrer">
+                      Details<span className="sr-only"> for {cityOf(r.locationId)}</span>
+                    </a>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

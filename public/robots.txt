@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+# Individual reports can contain URLs people tested; keep them out of search results.
+Disallow: /report/
+Disallow: /api/

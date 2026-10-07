@@ -1,6 +1,6 @@
 // Finished reports are kept as JSON files so their URLs survive a restart.
 
-import { mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Report, ReportListItem } from '../shared/types';
@@ -51,6 +51,20 @@ export class ReportStore {
     } catch {
       return null;
     }
+  }
+
+  /** Deletes reports older than `days` (0 keeps everything). Returns how many were removed. */
+  prune(days: number, now = new Date()): number {
+    if (days <= 0) return 0;
+    const cutoff = now.getTime() - days * 86_400_000;
+    let removed = 0;
+    for (const item of [...this.index.values()]) {
+      if (new Date(item.createdAt).getTime() >= cutoff) continue;
+      rmSync(path.join(this.dir, `${item.id}.json`), { force: true });
+      this.index.delete(item.id);
+      removed++;
+    }
+    return removed;
   }
 
   list(limit = 20): ReportListItem[] {

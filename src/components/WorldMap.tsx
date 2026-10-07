@@ -16,7 +16,9 @@ export interface MapMarker {
   ariaLabel: string;
 }
 
-const projection = geoNaturalEarth1().scale(world.scale).translate(world.translate as [number, number]);
+const projection = geoNaturalEarth1()
+  .scale(world.scale)
+  .translate(world.translate as [number, number]);
 const DOT_R = 1.7;
 
 // One path for all ~2.5k land dots keeps the DOM small.
@@ -71,7 +73,14 @@ export function WorldMap({
               onKeyDown={(e) => onKey(e, m.location.id)}
               onPointerMove={content ? (e) => tooltip.show(e.clientX, e.clientY, content) : undefined}
               onPointerLeave={tooltip.hide}
-              onFocus={content ? (e) => { const a = anchorOf(e.currentTarget); tooltip.show(a.x, a.y, content); } : undefined}
+              onFocus={
+                content
+                  ? (e) => {
+                      const a = anchorOf(e.currentTarget);
+                      tooltip.show(a.x, a.y, content);
+                    }
+                  : undefined
+              }
               onBlur={tooltip.hide}
             >
               <circle className="marker-hit" r={16} />

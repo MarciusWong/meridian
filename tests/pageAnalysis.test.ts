@@ -59,7 +59,10 @@ describe('inspectHtml', () => {
     expect(insights.bytes).toBe(Buffer.byteLength(PAGE));
   });
   it('finds render-blocking head scripts only', () => {
-    expect(insights.renderBlockingScripts).toEqual(['https://www.googletagmanager.com/gtag/js?id=1', 'https://www.example.com/vendor.js']);
+    expect(insights.renderBlockingScripts).toEqual([
+      'https://www.googletagmanager.com/gtag/js?id=1',
+      'https://www.example.com/vendor.js',
+    ]);
     expect(insights.scripts).toBe(6);
     expect(insights.stylesheets).toBe(2);
   });

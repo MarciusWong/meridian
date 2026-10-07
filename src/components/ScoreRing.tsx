@@ -7,7 +7,13 @@ export function ScoreRing({ score, label, size = 72 }: { score: number | null; l
   const status = score === null ? null : scoreStatus(score);
   return (
     <div className="score-ring" style={{ width: size }}>
-      <svg viewBox="0 0 36 36" width={size} height={size} role="img" aria-label={`${label}: ${score ?? 'not available'}${status ? ` (${STATUS_LABEL[status]})` : ''}`}>
+      <svg
+        viewBox="0 0 36 36"
+        width={size}
+        height={size}
+        role="img"
+        aria-label={`${label}: ${score ?? 'not available'}${status ? ` (${STATUS_LABEL[status]})` : ''}`}
+      >
         <circle cx="18" cy="18" r={r} className="score-ring-track" />
         {score !== null && (
           <circle

@@ -29,4 +29,3 @@ export function StatusBadge({ status, label }: { status: MetricStatus | 'failed'
     </span>
   );
 }
-

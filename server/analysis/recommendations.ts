@@ -31,7 +31,10 @@ function maxDefined(values: Array<number | undefined>): number | undefined {
 function merge(group: Finding[]): Finding {
   const primary = group.find((f) => !isLighthouseOnly(f)) ?? group[0];
   const withFixes = [primary, ...group].find((f) => f.fixes.length > 0 && f.fixes[0] !== GENERIC_FIX) ?? primary;
-  const severity = group.reduce<Severity>((best, f) => (SEVERITY_RANK[f.severity] > SEVERITY_RANK[best] ? f.severity : best), 'low');
+  const severity = group.reduce<Severity>(
+    (best, f) => (SEVERITY_RANK[f.severity] > SEVERITY_RANK[best] ? f.severity : best),
+    'low',
+  );
   const locations = unique(group.flatMap((f) => f.locations ?? []));
   return {
     ...primary,

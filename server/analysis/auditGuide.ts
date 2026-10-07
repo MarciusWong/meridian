@@ -41,8 +41,16 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
       'Split CSS per page or component and inline only critical above-the-fold rules.',
     ],
   },
-  'unminified-javascript': { category: 'JavaScript', title: 'Minify JavaScript', fixes: ['Enable minification in the build (esbuild, Terser, SWC) for every production bundle.'] },
-  'unminified-css': { category: 'Rendering', title: 'Minify CSS', fixes: ['Enable CSS minification in the build (Lightning CSS, cssnano).'] },
+  'unminified-javascript': {
+    category: 'JavaScript',
+    title: 'Minify JavaScript',
+    fixes: ['Enable minification in the build (esbuild, Terser, SWC) for every production bundle.'],
+  },
+  'unminified-css': {
+    category: 'Rendering',
+    title: 'Minify CSS',
+    fixes: ['Enable CSS minification in the build (Lightning CSS, cssnano).'],
+  },
   'legacy-javascript-insight': {
     key: 'legacy-javascript',
     category: 'JavaScript',
@@ -83,7 +91,11 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
     title: 'Avoid forced synchronous layouts',
     fixes: ['Batch DOM reads before writes; avoid reading offsetWidth/getBoundingClientRect right after changing styles.'],
   },
-  'long-tasks': { category: 'JavaScript', title: 'Avoid long main-thread tasks', fixes: ['Split work into tasks under 50 ms and yield to the main thread between them.'] },
+  'long-tasks': {
+    category: 'JavaScript',
+    title: 'Avoid long main-thread tasks',
+    fixes: ['Split work into tasks under 50 ms and yield to the main thread between them.'],
+  },
   'image-delivery-insight': {
     key: 'modern-images',
     category: 'Images',
@@ -98,8 +110,16 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
   'uses-optimized-images': { key: 'modern-images', category: 'Images', fixes: [] },
   'uses-responsive-images': { key: 'modern-images', category: 'Images', fixes: [] },
   'offscreen-images': { key: 'lazy-images', category: 'Images', fixes: ['Add loading="lazy" to below-the-fold images.'] },
-  'efficient-animated-content': { category: 'Images', title: 'Use video instead of animated GIFs', fixes: ['Convert animated GIFs to MP4/WebM and play them with <video autoplay muted loop playsinline>.'] },
-  'unsized-images': { key: 'unsized-images', category: 'Rendering', fixes: ['Add width and height attributes (or CSS aspect-ratio) to images.'] },
+  'efficient-animated-content': {
+    category: 'Images',
+    title: 'Use video instead of animated GIFs',
+    fixes: ['Convert animated GIFs to MP4/WebM and play them with <video autoplay muted loop playsinline>.'],
+  },
+  'unsized-images': {
+    key: 'unsized-images',
+    category: 'Rendering',
+    fixes: ['Add width and height attributes (or CSS aspect-ratio) to images.'],
+  },
   'cls-culprits-insight': {
     category: 'Rendering',
     title: 'Fix layout shifts',
@@ -109,7 +129,11 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
       'Use font-display: optional or size-adjusted fallback fonts to stop text reflowing.',
     ],
   },
-  'non-composited-animations': { category: 'Rendering', title: 'Use compositor-friendly animations', fixes: ['Animate only transform and opacity; avoid animating layout properties like top, width or margin.'] },
+  'non-composited-animations': {
+    category: 'Rendering',
+    title: 'Use compositor-friendly animations',
+    fixes: ['Animate only transform and opacity; avoid animating layout properties like top, width or margin.'],
+  },
   'lcp-discovery-insight': {
     category: 'Rendering',
     title: 'Make the main (LCP) image discoverable early',
@@ -156,7 +180,11 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
     ],
   },
   'uses-long-cache-ttl': { key: 'static-caching', category: 'Caching', fixes: [] },
-  'font-display-insight': { key: 'font-display', category: 'Fonts', fixes: ['Add font-display: swap or optional to @font-face rules.'] },
+  'font-display-insight': {
+    key: 'font-display',
+    category: 'Fonts',
+    fixes: ['Add font-display: swap or optional to @font-face rules.'],
+  },
   'font-display': { key: 'font-display', category: 'Fonts', fixes: [] },
   'third-parties-insight': {
     key: 'third-parties',
@@ -176,15 +204,20 @@ export const AUDIT_GUIDE: Record<string, AuditGuide> = {
   'dom-size-insight': {
     category: 'Rendering',
     title: 'Reduce DOM size',
-    fixes: ['Render long lists virtually or paginate them; remove wrapper elements and hidden duplicate markup (e.g. separate mobile/desktop menus).'],
+    fixes: [
+      'Render long lists virtually or paginate them; remove wrapper elements and hidden duplicate markup (e.g. separate mobile/desktop menus).',
+    ],
   },
   'modern-http-insight': { key: 'http2', category: 'Protocol & security', fixes: ['Serve all resources over HTTP/2 or HTTP/3.'] },
   'uses-http2': { key: 'http2', category: 'Protocol & security', fixes: [] },
-  'viewport-insight': { key: 'viewport', category: 'Rendering', fixes: ['Add <meta name="viewport" content="width=device-width, initial-scale=1">.'] },
+  'viewport-insight': {
+    key: 'viewport',
+    category: 'Rendering',
+    fixes: ['Add <meta name="viewport" content="width=device-width, initial-scale=1">.'],
+  },
   'bf-cache': {
     category: 'Caching',
     title: 'Allow the back/forward cache',
     fixes: ['Avoid `unload` handlers and `Cache-Control: no-store` on pages so back/forward navigations restore instantly.'],
   },
 };
-

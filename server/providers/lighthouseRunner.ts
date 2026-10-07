@@ -14,7 +14,11 @@ export interface LighthouseOutcome {
   notes: string[];
 }
 
-export async function runLighthouse(url: string, formFactor: FormFactor, onDetail: (d: string) => void): Promise<LighthouseOutcome> {
+export async function runLighthouse(
+  url: string,
+  formFactor: FormFactor,
+  onDetail: (d: string) => void,
+): Promise<LighthouseOutcome> {
   const notes: string[] = [];
   const mode = config.lighthouseMode;
 

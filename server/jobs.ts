@@ -3,8 +3,18 @@
 
 import { randomBytes } from 'node:crypto';
 import type {
-  CreateTestRequest, FieldData, FormFactor, JobStep, LighthouseSummary, LocationResult, PageInspection, Report,
-  ReportListItem, StepId, TestLocation, WptLocationRun,
+  CreateTestRequest,
+  FieldData,
+  FormFactor,
+  JobStep,
+  LighthouseSummary,
+  LocationResult,
+  PageInspection,
+  Report,
+  ReportListItem,
+  StepId,
+  TestLocation,
+  WptLocationRun,
 } from '../shared/types';
 import { detectCdn } from './analysis/pageAnalysis';
 import { buildRecommendations } from './analysis/recommendations';
@@ -19,7 +29,11 @@ type Detail = (detail: string) => void;
 export interface Providers {
   guard: (url: string) => Promise<void>;
   inspect: (url: string) => Promise<PageInspection>;
-  network: (url: string, locations: TestLocation[], onDetail: Detail) => Promise<{ locations: LocationResult[]; measurementIds: string[] }>;
+  network: (
+    url: string,
+    locations: TestLocation[],
+    onDetail: Detail,
+  ) => Promise<{ locations: LocationResult[]; measurementIds: string[] }>;
   lighthouse: (url: string, formFactor: FormFactor, onDetail: Detail) => Promise<LighthouseOutcome>;
   webpagetest?: (url: string, locations: TestLocation[], onDetail: Detail) => Promise<WptLocationRun[]>;
 }
@@ -38,7 +52,7 @@ const STEP_LABELS: Record<StepId, string> = {
 };
 
 function newId(): string {
-  return `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`;
+  return `${Date.now().toString(36)}-${randomBytes(10).toString('hex')}`;
 }
 
 export class JobManager {
@@ -62,7 +76,11 @@ export class JobManager {
     }
 
     const withLighthouse = request.lighthouse !== false;
-    const step = (id: StepId, enabled = true): JobStep => ({ id, label: STEP_LABELS[id], status: enabled ? 'pending' : 'skipped' });
+    const step = (id: StepId, enabled = true): JobStep => ({
+      id,
+      label: STEP_LABELS[id],
+      status: enabled ? 'pending' : 'skipped',
+    });
     const report: Report = {
       id: newId(),
       url,
@@ -142,7 +160,9 @@ export class JobManager {
 
       let field: FieldData | null = null;
       const lighthouse = async (formFactor: FormFactor): Promise<LighthouseSummary | null> => {
-        const outcome = await attempt(`lighthouse-${formFactor}`, (onDetail) => this.providers.lighthouse(target, formFactor, onDetail));
+        const outcome = await attempt(`lighthouse-${formFactor}`, (onDetail) =>
+          this.providers.lighthouse(target, formFactor, onDetail),
+        );
         if (!outcome) return null;
         report.errors.push(...outcome.notes.map((n) => `Lighthouse (${formFactor}): ${n}`));
         field = field ?? outcome.field;

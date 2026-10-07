@@ -40,7 +40,12 @@ export function probeHttpVersion(url: string): Promise<PageInspection['httpVersi
   const { hostname, port, protocol } = new URL(url);
   if (protocol !== 'https:') return Promise.resolve('http/1.1');
   return new Promise((resolve) => {
-    const socket = tls.connect({ host: hostname, servername: hostname, port: Number(port || 443), ALPNProtocols: ['h2', 'http/1.1'] });
+    const socket = tls.connect({
+      host: hostname,
+      servername: hostname,
+      port: Number(port || 443),
+      ALPNProtocols: ['h2', 'http/1.1'],
+    });
     const finish = (value: PageInspection['httpVersion']) => {
       socket.destroy();
       resolve(value);

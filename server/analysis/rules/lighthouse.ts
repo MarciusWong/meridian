@@ -25,7 +25,9 @@ function evidenceFor(audit: LighthouseAudit, formFactor: LighthouseSummary['form
     audit.savingsBytes ? `${formatBytes(audit.savingsBytes)} smaller` : null,
   ].filter(Boolean);
   const label = formFactor === 'mobile' ? 'Mobile' : 'Desktop';
-  parts.push(`${label} Lighthouse: ${audit.displayValue ?? audit.title}${savings.length ? ` — potential ${savings.join(', ')}` : ''}`);
+  parts.push(
+    `${label} Lighthouse: ${audit.displayValue ?? audit.title}${savings.length ? ` — potential ${savings.join(', ')}` : ''}`,
+  );
   return [...parts, ...audit.items];
 }
 

@@ -24,7 +24,9 @@ describe('normaliseLighthouse', () => {
 
   it('keeps only failing performance audits, excluding metrics', () => {
     const ids = summary.audits.map((a) => a.id);
-    expect(ids).toEqual(expect.arrayContaining(['render-blocking-insight', 'unused-javascript', 'unused-css-rules', 'bootup-time']));
+    expect(ids).toEqual(
+      expect.arrayContaining(['render-blocking-insight', 'unused-javascript', 'unused-css-rules', 'bootup-time']),
+    );
     expect(ids).not.toContain('largest-contentful-paint');
     expect(ids).not.toContain('modern-http-insight');
     for (const audit of summary.audits) expect(audit.score === null || audit.score < 0.9).toBe(true);

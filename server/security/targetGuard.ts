@@ -6,10 +6,13 @@ export class TargetError extends Error {
   readonly status = 400;
 }
 
+const MAX_URL_LENGTH = 2048;
+
 /** Validates user input and returns a canonical absolute http(s) URL without a fragment. */
 export function normaliseUrl(input: string): string {
   const raw = (input ?? '').trim();
   if (!raw) throw new TargetError('Enter a URL to test.');
+  if (raw.length > MAX_URL_LENGTH) throw new TargetError(`That URL is too long (maximum ${MAX_URL_LENGTH} characters).`);
 
   // "example.com:8443" looks like a scheme to the URL parser; only treat input as
   // having a scheme when it has "//" or is a known non-network scheme.

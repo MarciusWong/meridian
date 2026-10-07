@@ -5,8 +5,14 @@ import type { HtmlInsights } from '../../shared/types';
 
 type HeaderTest = (h: Record<string, string>) => boolean;
 
-const has = (name: string): HeaderTest => (h) => name in h;
-const matches = (name: string, pattern: RegExp): HeaderTest => (h) => pattern.test(h[name] ?? '');
+const has =
+  (name: string): HeaderTest =>
+  (h) =>
+    name in h;
+const matches =
+  (name: string, pattern: RegExp): HeaderTest =>
+  (h) =>
+    pattern.test(h[name] ?? '');
 
 // Order matters: more specific signatures first (e.g. Netlify and Vercel both sit behind other networks).
 const CDN_SIGNATURES: Array<[string, HeaderTest[]]> = [
@@ -139,7 +145,10 @@ export function inspectHtml(html: string, pageUrl: string): HtmlInsights {
     if (img.attr('width') === undefined || img.attr('height') === undefined) imagesWithoutDimensions++;
     if (images > EAGER_IMAGE_ALLOWANCE && (img.attr('loading') ?? '').toLowerCase() !== 'lazy') imagesWithoutLazy++;
     const picture = img.closest('picture');
-    const hasModernSource = picture.find('source').toArray().some((s) => MODERN_SOURCE.test(`${$(s).attr('type') ?? ''} ${$(s).attr('srcset') ?? ''}`));
+    const hasModernSource = picture
+      .find('source')
+      .toArray()
+      .some((s) => MODERN_SOURCE.test(`${$(s).attr('type') ?? ''} ${$(s).attr('srcset') ?? ''}`));
     const modernSrcset = MODERN_SOURCE.test(img.attr('srcset') ?? '');
     if (src && LEGACY_IMAGE.test(src) && !hasModernSource && !modernSrcset) legacyImageFormats++;
   });

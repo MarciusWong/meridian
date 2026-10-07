@@ -160,7 +160,10 @@ button {
   font-size: 14px;
   white-space: nowrap;
   text-decoration: none;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.1s;
 }
 
 .btn:hover {
@@ -226,7 +229,9 @@ button {
 .segmented button[aria-pressed='true'] {
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--line);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 0 0 1px var(--line);
 }
 
 .select {
@@ -234,7 +239,9 @@ button {
   padding: 0 28px 0 12px;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23898781' stroke-width='1.5'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 11px center;
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23898781' stroke-width='1.5'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E")
+    no-repeat right 11px center;
   appearance: none;
   font-size: 13px;
 }
@@ -260,19 +267,45 @@ button {
   height: 14px;
 }
 
-.badge-critical { background: var(--critical-soft); }
-.badge-critical .icon { color: var(--critical); }
-.badge-high { background: var(--serious-soft); }
-.badge-high .icon { color: var(--serious); }
-.badge-medium { background: var(--warning-soft); }
-.badge-medium .icon { color: var(--warning); }
-.badge-low .icon { color: var(--muted); }
-.badge-good { background: var(--good-soft); }
-.badge-good .icon { color: var(--good); }
-.badge-needs-improvement { background: var(--warning-soft); }
-.badge-needs-improvement .icon { color: var(--warning); }
-.badge-poor { background: var(--critical-soft); }
-.badge-poor .icon { color: var(--critical); }
+.badge-critical {
+  background: var(--critical-soft);
+}
+.badge-critical .icon {
+  color: var(--critical);
+}
+.badge-high {
+  background: var(--serious-soft);
+}
+.badge-high .icon {
+  color: var(--serious);
+}
+.badge-medium {
+  background: var(--warning-soft);
+}
+.badge-medium .icon {
+  color: var(--warning);
+}
+.badge-low .icon {
+  color: var(--muted);
+}
+.badge-good {
+  background: var(--good-soft);
+}
+.badge-good .icon {
+  color: var(--good);
+}
+.badge-needs-improvement {
+  background: var(--warning-soft);
+}
+.badge-needs-improvement .icon {
+  color: var(--warning);
+}
+.badge-poor {
+  background: var(--critical-soft);
+}
+.badge-poor .icon {
+  color: var(--critical);
+}
 
 .pill {
   display: inline-flex;

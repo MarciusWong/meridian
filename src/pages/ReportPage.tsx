@@ -9,6 +9,7 @@ import { TimingChart } from '../components/TimingChart';
 import { VitalsPanel } from '../components/VitalsPanel';
 import { WorldMap, type MapMarker } from '../components/WorldMap';
 import { api, ApiError, type AppConfig } from '../lib/api';
+import { rememberReport } from '../lib/history';
 import { displayUrl, formatDate } from '../lib/format';
 
 const POLL_MS = 1500;
@@ -26,6 +27,7 @@ function useReport(id: string) {
         if (cancelled) return;
         setReport(next);
         setError(null);
+        rememberReport(next);
         if (next.status === 'running') timer = setTimeout(load, POLL_MS);
       } catch (err) {
         if (cancelled) return;
@@ -72,7 +74,9 @@ export function ReportPage({ id, config, navigate }: { id: string; config: AppCo
       <main className="container page-message">
         <h1>Report not found</h1>
         <p>It may have been removed from this server.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/')}>Run a new test</button>
+        <button className="btn btn-primary" onClick={() => navigate('/')}>
+          Run a new test
+        </button>
       </main>
     );
   }
@@ -127,7 +131,11 @@ export function ReportPage({ id, config, navigate }: { id: string; config: AppCo
       </header>
 
       <div className="container">
-        {error && !error.notFound && <p className="notice notice-warn" role="status">Connection problem: {error.message}. Retrying…</p>}
+        {error && !error.notFound && (
+          <p className="notice notice-warn" role="status">
+            Connection problem: {error.message}. Retrying…
+          </p>
+        )}
         {running ? <Progress report={report} elapsed={elapsed} /> : <Results report={report} config={config} />}
       </div>
     </main>
@@ -146,7 +154,13 @@ function Progress({ report, elapsed }: { report: Report; elapsed: number }) {
       <div className="card card-pad progress-steps" aria-live="polite">
         <div className="progress-head">
           <div className="eyebrow">Running · {elapsed}s</div>
-          <div className="progress-bar" role="progressbar" aria-valuemin={0} aria-valuemax={report.steps.length} aria-valuenow={done}>
+          <div
+            className="progress-bar"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={report.steps.length}
+            aria-valuenow={done}
+          >
             <span style={{ width: `${(done / report.steps.length) * 100}%` }} />
           </div>
         </div>
@@ -163,13 +177,17 @@ function Progress({ report, elapsed }: { report: Report; elapsed: number }) {
               <span>
                 <span className="step-label">{step.label}</span>
                 <span className="step-detail">
-                  {step.status === 'skipped' ? 'Skipped' : step.detail ?? (step.status === 'pending' ? 'Waiting' : step.status === 'done' ? 'Done' : '')}
+                  {step.status === 'skipped'
+                    ? 'Skipped'
+                    : (step.detail ?? (step.status === 'pending' ? 'Waiting' : step.status === 'done' ? 'Done' : ''))}
                 </span>
               </span>
             </li>
           ))}
         </ol>
-        <p className="progress-note">A full test usually takes 1–2 minutes. You can leave this page and come back — the report link stays valid.</p>
+        <p className="progress-note">
+          A full test usually takes 1–2 minutes. You can leave this page and come back — the report link stays valid.
+        </p>
       </div>
       <div className="card card-pad">
         <WorldMap markers={markers} caption="Locations being tested" />
@@ -217,9 +235,6 @@ function Results({ report, config }: { report: Report; config: AppConfig }) {
           <TechDetails report={report} />
         </>
       )}
-      <footer className="report-foot">
-        Measurements by Globalping{report.lighthouse.mobile ? `, ${report.lighthouse.mobile.source}` : ''} and the Meridian page inspector.
-      </footer>
     </>
   );
 }

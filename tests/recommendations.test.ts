@@ -11,7 +11,16 @@ const locations = ids.map((id) => getLocation(id) as TestLocation);
 function net(
   locationId: string,
   ttfb: number,
-  opts: Partial<{ dns: number; tls: number; rtt: number; cache: string | null; status: LocationResult['status']; error: string; tlsProtocol: string; expiresAt: string }> = {},
+  opts: Partial<{
+    dns: number;
+    tls: number;
+    rtt: number;
+    cache: string | null;
+    status: LocationResult['status'];
+    error: string;
+    tlsProtocol: string;
+    expiresAt: string;
+  }> = {},
 ): LocationResult {
   const dns = opts.dns ?? 10;
   const tls = opts.tls ?? 20;
@@ -31,24 +40,58 @@ function net(
     warm: failed ? null : run,
     rttMs: opts.rtt ?? 20,
     packetLoss: 0,
-    tls: { protocol: opts.tlsProtocol ?? 'TLSv1.3', cipher: null, issuer: null, authorized: true, expiresAt: opts.expiresAt ?? '2099-01-01T00:00:00Z' },
+    tls: {
+      protocol: opts.tlsProtocol ?? 'TLSv1.3',
+      cipher: null,
+      issuer: null,
+      authorized: true,
+      expiresAt: opts.expiresAt ?? '2099-01-01T00:00:00Z',
+    },
     headers: {},
     status: opts.status ?? 'ok',
-    error: failed ? opts.error ?? 'timeout' : null,
+    error: failed ? (opts.error ?? 'timeout') : null,
   };
 }
 
 const goodHtml: HtmlInsights = {
-  bytes: 30_000, title: 'x', hasViewport: true, renderBlockingScripts: [], stylesheets: 1, scripts: 2, inlineScriptBytes: 0,
-  inlineStyleBytes: 0, images: 2, imagesWithoutDimensions: 0, imagesWithoutLazy: 0, legacyImageFormats: 0,
-  thirdPartyOrigins: [], preconnectOrigins: [], preloads: 1, fontDisplaySwap: true, usesGoogleFonts: false,
+  bytes: 30_000,
+  title: 'x',
+  hasViewport: true,
+  renderBlockingScripts: [],
+  stylesheets: 1,
+  scripts: 2,
+  inlineScriptBytes: 0,
+  inlineStyleBytes: 0,
+  images: 2,
+  imagesWithoutDimensions: 0,
+  imagesWithoutLazy: 0,
+  legacyImageFormats: 0,
+  thirdPartyOrigins: [],
+  preconnectOrigins: [],
+  preloads: 1,
+  fontDisplaySwap: true,
+  usesGoogleFonts: false,
 };
 
 function inspection(overrides: Partial<PageInspection> = {}, html: Partial<HtmlInsights> = {}): PageInspection {
   return {
-    requestedUrl: 'https://example.com/', finalUrl: 'https://example.com/', status: 200, redirects: [], ttfbMs: 100, totalMs: 120,
-    headers: {}, compression: 'br', supportsBrotli: true, httpVersion: 'h2', supportsHttp3: true, cdn: 'Cloudflare',
-    server: 'cloudflare', cacheControl: 'public, max-age=60', hsts: true, html: { ...goodHtml, ...html }, ...overrides,
+    requestedUrl: 'https://example.com/',
+    finalUrl: 'https://example.com/',
+    status: 200,
+    redirects: [],
+    ttfbMs: 100,
+    totalMs: 120,
+    headers: {},
+    compression: 'br',
+    supportsBrotli: true,
+    httpVersion: 'h2',
+    supportsHttp3: true,
+    cdn: 'Cloudflare',
+    server: 'cloudflare',
+    cacheControl: 'public, max-age=60',
+    hsts: true,
+    html: { ...goodHtml, ...html },
+    ...overrides,
   };
 }
 
@@ -83,7 +126,13 @@ describe('buildRecommendations', () => {
   });
 
   it('flags very slow regions as critical and slow ones as high', () => {
-    const network = [net('london', 150), net('frankfurt', 160), net('new-york', 900), net('sydney', 2100), net('singapore', 1900)];
+    const network = [
+      net('london', 150),
+      net('frankfurt', 160),
+      net('new-york', 900),
+      net('sydney', 2100),
+      net('singapore', 1900),
+    ];
     const recs = buildRecommendations(input({ network, inspection: inspection({ cdn: null }) }));
     const slow = find(recs, 'slow-ttfb');
     expect(slow?.severity).toBe('critical');
@@ -100,7 +149,13 @@ describe('buildRecommendations', () => {
   });
 
   it('does not recommend a CDN when probes see a caching layer the inspector could not name', () => {
-    const network = [net('london', 90, { cache: 'HIT' }), net('frankfurt', 110, { cache: 'HIT' }), net('new-york', 450, { cache: 'MISS' }), net('sydney', 1100, { cache: 'MISS' }), net('singapore', 950, { cache: 'MISS' })];
+    const network = [
+      net('london', 90, { cache: 'HIT' }),
+      net('frankfurt', 110, { cache: 'HIT' }),
+      net('new-york', 450, { cache: 'MISS' }),
+      net('sydney', 1100, { cache: 'MISS' }),
+      net('singapore', 950, { cache: 'MISS' }),
+    ];
     const recs = buildRecommendations(input({ network, inspection: inspection({ cdn: null }) }));
     expect(find(recs, 'use-cdn')).toBeUndefined();
     expect(find(recs, 'edge-cache-html')?.title).toMatch(/CDN edge/);
@@ -129,8 +184,12 @@ describe('buildRecommendations', () => {
 
   it('flags certificates that expire soon', () => {
     const expiring = (date: string) => ids.map((id) => net(id, 120, { cache: 'HIT', expiresAt: date }));
-    expect(find(buildRecommendations(input({ network: expiring('2026-10-12T00:00:00Z') })), 'certificate-expiry')?.severity).toBe('critical');
-    expect(find(buildRecommendations(input({ network: expiring('2026-10-19T00:00:00Z') })), 'certificate-expiry')?.severity).toBe('high');
+    expect(find(buildRecommendations(input({ network: expiring('2026-10-12T00:00:00Z') })), 'certificate-expiry')?.severity).toBe(
+      'critical',
+    );
+    expect(find(buildRecommendations(input({ network: expiring('2026-10-19T00:00:00Z') })), 'certificate-expiry')?.severity).toBe(
+      'high',
+    );
   });
 
   it('does not flag short-lived, auto-renewed certificates with weeks left', () => {
@@ -153,8 +212,15 @@ describe('buildRecommendations', () => {
     const recs = buildRecommendations(
       input({
         inspection: inspection({
-          compression: null, supportsBrotli: false, httpVersion: 'http/1.1', supportsHttp3: false, hsts: false,
-          redirects: [{ url: 'http://example.com/', status: 301, timeMs: 80 }, { url: 'https://example.com/', status: 301, timeMs: 90 }],
+          compression: null,
+          supportsBrotli: false,
+          httpVersion: 'http/1.1',
+          supportsHttp3: false,
+          hsts: false,
+          redirects: [
+            { url: 'http://example.com/', status: 301, timeMs: 80 },
+            { url: 'https://example.com/', status: 301, timeMs: 90 },
+          ],
         }),
       }),
     );
@@ -169,11 +235,18 @@ describe('buildRecommendations', () => {
   it('flags HTML problems', () => {
     const recs = buildRecommendations(
       input({
-        inspection: inspection({}, {
-          hasViewport: false, imagesWithoutDimensions: 4, legacyImageFormats: 5, fontDisplaySwap: false, bytes: 400_000,
-          renderBlockingScripts: ['https://example.com/a.js', 'https://example.com/b.js'],
-          thirdPartyOrigins: Array.from({ length: 12 }, (_, i) => `https://t${i}.com`),
-        }),
+        inspection: inspection(
+          {},
+          {
+            hasViewport: false,
+            imagesWithoutDimensions: 4,
+            legacyImageFormats: 5,
+            fontDisplaySwap: false,
+            bytes: 400_000,
+            renderBlockingScripts: ['https://example.com/a.js', 'https://example.com/b.js'],
+            thirdPartyOrigins: Array.from({ length: 12 }, (_, i) => `https://t${i}.com`),
+          },
+        ),
       }),
     );
     expect(find(recs, 'viewport')?.severity).toBe('high');
@@ -220,7 +293,8 @@ describe('buildRecommendations', () => {
     const recs = buildRecommendations(
       input({
         field: {
-          scope: 'origin', overall: 'poor',
+          scope: 'origin',
+          overall: 'poor',
           metrics: [
             { id: 'lcp', label: 'Largest Contentful Paint', p75: 4600, unit: 'ms', status: 'poor' },
             { id: 'cls', label: 'Cumulative Layout Shift', p75: 0.05, unit: 'unitless', status: 'good' },

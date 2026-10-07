@@ -59,6 +59,12 @@
 
 /* ------------------------------------------------------------ page states */
 
+/* Keeps the footer below the fold while pages load, so nothing jumps. */
+.app-body {
+  min-height: calc(100vh - 60px);
+  min-height: calc(100svh - 60px);
+}
+
 .page-message {
   padding-top: 80px;
   padding-bottom: 80px;
@@ -85,8 +91,12 @@
 }
 
 @keyframes loading {
-  from { background-position: -50% 0; }
-  to { background-position: 150% 0; }
+  from {
+    background-position: -50% 0;
+  }
+  to {
+    background-position: 150% 0;
+  }
 }
 
 .notice {
@@ -200,14 +210,6 @@
   scroll-margin-top: 120px;
 }
 
-.report-foot {
-  margin: 64px 0 48px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-  font-size: 13px;
-  color: var(--ink-3);
-}
-
 /* ------------------------------------------------------------ progress */
 
 .progress-grid {
@@ -263,8 +265,12 @@
   height: 20px;
 }
 
-.step-done .icon { color: var(--good); }
-.step-failed .icon { color: var(--critical); }
+.step-done .icon {
+  color: var(--good);
+}
+.step-failed .icon {
+  color: var(--critical);
+}
 
 .step-label {
   display: block;
@@ -305,7 +311,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .progress-note {
@@ -378,12 +386,26 @@
 }
 
 /* Grade swatches — the letter carries the meaning; the tint supports it. */
-.grade-A .grade-letter, .recent-grade.grade-A,
-.grade-B .grade-letter, .recent-grade.grade-B { background: var(--good-soft); color: var(--good-text); }
-.grade-C .grade-letter, .recent-grade.grade-C,
-.grade-D .grade-letter, .recent-grade.grade-D { background: var(--warning-soft); }
-.grade-E .grade-letter, .recent-grade.grade-E,
-.grade-F .grade-letter, .recent-grade.grade-F { background: var(--critical-soft); color: var(--critical-text); }
+.grade-A .grade-letter,
+.recent-grade.grade-A,
+.grade-B .grade-letter,
+.recent-grade.grade-B {
+  background: var(--good-soft);
+  color: var(--good-text);
+}
+.grade-C .grade-letter,
+.recent-grade.grade-C,
+.grade-D .grade-letter,
+.recent-grade.grade-D {
+  background: var(--warning-soft);
+}
+.grade-E .grade-letter,
+.recent-grade.grade-E,
+.grade-F .grade-letter,
+.recent-grade.grade-F {
+  background: var(--critical-soft);
+  color: var(--critical-text);
+}
 
 .overview-tiles {
   display: grid;
@@ -494,9 +516,15 @@
   stroke-linecap: round;
 }
 
-.score-good { stroke: var(--good); }
-.score-needs-improvement { stroke: var(--warning); }
-.score-poor { stroke: var(--critical); }
+.score-good {
+  stroke: var(--good);
+}
+.score-needs-improvement {
+  stroke: var(--warning);
+}
+.score-poor {
+  stroke: var(--critical);
+}
 
 .score-ring-value {
   font-size: 10.5px;
@@ -734,9 +762,18 @@
   opacity: 0.4;
 }
 
-.threshold-good { background: var(--good); border-radius: 999px 0 0 999px; }
-.threshold-ni { background: var(--warning); }
-.threshold-poor { flex: 1; background: var(--critical); border-radius: 0 999px 999px 0; }
+.threshold-good {
+  background: var(--good);
+  border-radius: 999px 0 0 999px;
+}
+.threshold-ni {
+  background: var(--warning);
+}
+.threshold-poor {
+  flex: 1;
+  background: var(--critical);
+  border-radius: 0 999px 999px 0;
+}
 
 .threshold-marker {
   position: absolute;
@@ -888,4 +925,30 @@
     grid-template-columns: 1fr;
     gap: 2px;
   }
+}
+
+/* ------------------------------------------------------------ site footer */
+
+.site-footer {
+  margin-top: 64px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.site-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 24px;
+  padding-bottom: 32px;
+}
+
+.site-footer a {
+  color: var(--ink-2);
+}
+
+.site-footer-repo {
+  font-weight: 500;
 }

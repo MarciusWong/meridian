@@ -56,7 +56,10 @@ async function runOne(url: string, wptId: string, apiKey: string): Promise<{ vie
     const status = await getJson<{ statusCode: number }>(`${API}/testStatus.php?test=${testId}&f=json`, apiKey);
     if (status.statusCode >= 400) throw new Error('WebPageTest test failed');
     if (status.statusCode === 200) {
-      const result = await getJson<{ data?: { median?: { firstView?: FirstView } } }>(`${API}/jsonResult.php?test=${testId}`, apiKey);
+      const result = await getJson<{ data?: { median?: { firstView?: FirstView } } }>(
+        `${API}/jsonResult.php?test=${testId}`,
+        apiKey,
+      );
       const view = result.data?.median?.firstView;
       if (!view) throw new Error('WebPageTest returned no first-view result');
       return { view, testUrl: userUrl };
@@ -82,14 +85,29 @@ export async function runWebPageTest(
         const { view, testUrl } = await runOne(url, wptId, apiKey);
         const n = (key: string) => (typeof view[key] === 'number' ? (view[key] as number) : null);
         return {
-          locationId: location.id, wptLocation: wptId, ttfb: n('TTFB'), fcp: n('firstContentfulPaint'),
-          lcp: n('chromeUserTiming.LargestContentfulPaint'), speedIndex: n('SpeedIndex'), fullyLoaded: n('fullyLoaded'),
-          bytesIn: n('bytesIn'), testUrl, error: null,
+          locationId: location.id,
+          wptLocation: wptId,
+          ttfb: n('TTFB'),
+          fcp: n('firstContentfulPaint'),
+          lcp: n('chromeUserTiming.LargestContentfulPaint'),
+          speedIndex: n('SpeedIndex'),
+          fullyLoaded: n('fullyLoaded'),
+          bytesIn: n('bytesIn'),
+          testUrl,
+          error: null,
         };
       } catch (error) {
         return {
-          locationId: location.id, wptLocation: wptId, ttfb: null, fcp: null, lcp: null, speedIndex: null, fullyLoaded: null,
-          bytesIn: null, testUrl: null, error: (error as Error).message,
+          locationId: location.id,
+          wptLocation: wptId,
+          ttfb: null,
+          fcp: null,
+          lcp: null,
+          speedIndex: null,
+          fullyLoaded: null,
+          bytesIn: null,
+          testUrl: null,
+          error: (error as Error).message,
         };
       }
     }),

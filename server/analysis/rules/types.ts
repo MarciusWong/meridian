@@ -1,4 +1,11 @@
-import type { FieldData, LighthouseSummary, LocationResult, PageInspection, Recommendation, TestLocation } from '../../../shared/types';
+import type {
+  FieldData,
+  LighthouseSummary,
+  LocationResult,
+  PageInspection,
+  Recommendation,
+  TestLocation,
+} from '../../../shared/types';
 
 /** A recommendation before ranking. Findings with the same id are merged. */
 export type Finding = Omit<Recommendation, 'priority'>;

@@ -30,7 +30,19 @@ function ThresholdTrack({ id, value }: { id: string; value: number }) {
   );
 }
 
-function MetricTile({ id, label, value, unit, status }: { id: string; label: string; value: number; unit: 'ms' | 'unitless'; status: MetricStatus }) {
+function MetricTile({
+  id,
+  label,
+  value,
+  unit,
+  status,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  unit: 'ms' | 'unitless';
+  status: MetricStatus;
+}) {
   return (
     <div className="metric card">
       <div className="metric-label">{label}</div>
@@ -57,7 +69,8 @@ export function VitalsPanel({ report }: { report: Report }) {
           <div className="eyebrow">Page experience</div>
           <h2 id="vitals-title">Core Web Vitals &amp; Lighthouse</h2>
           <p>
-            Lab metrics from a {summary?.source ?? 'Lighthouse'} run with simulated {formFactor === 'mobile' ? 'mid-range phone on a 4G connection' : 'desktop on a fast connection'}.
+            Lab metrics from a {summary?.source ?? 'Lighthouse'} run with simulated{' '}
+            {formFactor === 'mobile' ? 'mid-range phone on a 4G connection' : 'desktop on a fast connection'}.
             {report.field ? ' Real-user data from the Chrome UX Report is shown below.' : ''}
           </p>
         </div>
@@ -84,16 +97,29 @@ export function VitalsPanel({ report }: { report: Report }) {
             </div>
             {summary.screenshot && (
               <figure className="lighthouse-shot">
-                <img src={summary.screenshot} alt={`Screenshot of the page on ${formFactor}`} />
+                <img
+                  src={summary.screenshot}
+                  alt={`Screenshot of the page on ${formFactor}`}
+                  width={formFactor === 'mobile' ? 412 : 1350}
+                  height={formFactor === 'mobile' ? 823 : 940}
+                />
               </figure>
             )}
             <p className="lighthouse-meta">
-              {summary.source === 'Lighthouse' ? 'Local headless Chrome' : 'PageSpeed Insights'} · Lighthouse {summary.lighthouseVersion}
+              {summary.source === 'Lighthouse' ? 'Local headless Chrome' : 'PageSpeed Insights'} · Lighthouse{' '}
+              {summary.lighthouseVersion}
             </p>
           </div>
           <div className="metrics-grid">
             {summary.metrics.map((m) => (
-              <MetricTile key={m.id} id={m.id} label={m.label} value={m.value} unit={m.unit} status={metricStatus(m.id, m.value)} />
+              <MetricTile
+                key={m.id}
+                id={m.id}
+                label={m.label}
+                value={m.value}
+                unit={m.unit}
+                status={metricStatus(m.id, m.value)}
+              />
             ))}
           </div>
         </div>
@@ -102,7 +128,10 @@ export function VitalsPanel({ report }: { report: Report }) {
       {report.field && (
         <div className="field">
           <h3 className="field-title">
-            Real users <span>· Chrome UX Report, 75th percentile, {report.field.scope === 'url' ? 'this page' : 'whole origin'}, last 28 days</span>
+            Real users{' '}
+            <span>
+              · Chrome UX Report, 75th percentile, {report.field.scope === 'url' ? 'this page' : 'whole origin'}, last 28 days
+            </span>
           </h3>
           <div className="metrics-grid metrics-grid-wide">
             {report.field.metrics.map((m) => (
@@ -119,7 +148,9 @@ export function VitalsPanel({ report }: { report: Report }) {
 
 function PageWeight({ summary }: { summary: LighthouseSummary }) {
   const total = summary.resourceSummary.find((r) => r.type === 'total');
-  const rows = summary.resourceSummary.filter((r) => r.type !== 'total' && r.transferSize > 0).sort((a, b) => b.transferSize - a.transferSize);
+  const rows = summary.resourceSummary
+    .filter((r) => r.type !== 'total' && r.transferSize > 0)
+    .sort((a, b) => b.transferSize - a.transferSize);
   const max = Math.max(1, ...rows.map((r) => r.transferSize));
   const kb = (b: number) => (b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`);
   return (

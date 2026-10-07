@@ -6,7 +6,10 @@ import { normaliseFieldData, normaliseLighthouse, type RawLhr, type RawLoadingEx
 const ENDPOINT = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
 
 export class PsiError extends Error {
-  constructor(message: string, readonly rateLimited = false) {
+  constructor(
+    message: string,
+    readonly rateLimited = false,
+  ) {
     super(message);
   }
 }

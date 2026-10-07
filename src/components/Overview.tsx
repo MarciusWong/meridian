@@ -34,7 +34,9 @@ export function Overview({ report, config }: { report: Report; config: AppConfig
           </div>
         </div>
         {verdict && <p className="grade-verdict">{verdict}</p>}
-        <p className="grade-note">Blend of mobile (45%) and desktop (20%) Lighthouse performance and global first-byte delivery (35%).</p>
+        <p className="grade-note">
+          Blend of mobile (45%) and desktop (20%) Lighthouse performance and global first-byte delivery (35%).
+        </p>
       </div>
 
       <div className="overview-tiles">
@@ -83,13 +85,20 @@ export function Overview({ report, config }: { report: Report; config: AppConfig
             <div className="tile-foot">
               <StatusBadge
                 status={stats.locationsFailed ? 'failed' : 'good'}
-                label={stats.locationsFailed ? `${stats.locationsFailed} of ${stats.locationsTested} locations failed` : `All ${stats.locationsTested} locations reachable`}
+                label={
+                  stats.locationsFailed
+                    ? `${stats.locationsFailed} of ${stats.locationsTested} locations failed`
+                    : `All ${stats.locationsTested} locations reachable`
+                }
               />
             </div>
           )}
           {!stats && scores?.performanceMobile != null && (
             <div className="tile-foot">
-              <StatusBadge status={scoreStatus(scores.performanceMobile)} label={`Mobile: ${STATUS_LABEL[scoreStatus(scores.performanceMobile)]}`} />
+              <StatusBadge
+                status={scoreStatus(scores.performanceMobile)}
+                label={`Mobile: ${STATUS_LABEL[scoreStatus(scores.performanceMobile)]}`}
+              />
             </div>
           )}
         </div>

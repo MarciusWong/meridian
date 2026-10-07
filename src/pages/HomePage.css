@@ -19,8 +19,13 @@
 }
 
 @keyframes live {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 8px transparent; }
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
 }
 
 .hero-title {
@@ -56,12 +61,16 @@
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   box-shadow: var(--shadow);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .url-form:focus-within {
   border-color: var(--ink);
-  box-shadow: 0 0 0 4px var(--ring), var(--shadow);
+  box-shadow:
+    0 0 0 4px var(--ring),
+    var(--shadow);
 }
 
 .url-form-icon {
@@ -84,7 +93,7 @@
 }
 
 .url-form input::placeholder {
-  color: var(--muted);
+  color: var(--ink-3);
 }
 
 .url-form-submit {

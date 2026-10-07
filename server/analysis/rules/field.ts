@@ -34,12 +34,20 @@ const ADVICE: Record<FieldMetric['id'], { title: string; why: string; fixes: str
   fcp: {
     title: 'Real visitors wait for the first paint (FCP)',
     why: 'First Contentful Paint is when anything first appears; good is 1.8 s or less.',
-    fixes: ['Reduce server response time and redirects.', 'Inline critical CSS and defer the rest.', 'Preconnect to required origins.'],
+    fixes: [
+      'Reduce server response time and redirects.',
+      'Inline critical CSS and defer the rest.',
+      'Preconnect to required origins.',
+    ],
   },
   ttfb: {
     title: 'Real visitors wait for the server (TTFB)',
     why: 'Time to First Byte from real users includes redirects, DNS, connection set-up and server time; good is 0.8 s or less.',
-    fixes: ['Serve HTML from a CDN edge cache close to visitors.', 'Remove redirects.', 'Speed up the back end with page caching.'],
+    fixes: [
+      'Serve HTML from a CDN edge cache close to visitors.',
+      'Remove redirects.',
+      'Speed up the back end with page caching.',
+    ],
   },
 };
 

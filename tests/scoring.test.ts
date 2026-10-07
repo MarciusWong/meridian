@@ -66,14 +66,17 @@ function loc(id: string, region: TestLocation['region']): TestLocation {
 }
 
 function result(locationId: string, ttfb: number | null, status: LocationResult['status'] = 'ok'): LocationResult {
-  const run = ttfb === null ? null : {
-    statusCode: 200,
-    timings: { total: ttfb + 10, dns: 5, tcp: 5, tls: 10, firstByte: ttfb - 20, download: 10 },
-    ttfb,
-    cacheStatus: null,
-    resolvedAddress: '1.1.1.1',
-    error: null,
-  };
+  const run =
+    ttfb === null
+      ? null
+      : {
+          statusCode: 200,
+          timings: { total: ttfb + 10, dns: 5, tcp: 5, tls: 10, firstByte: ttfb - 20, download: 10 },
+          ttfb,
+          cacheStatus: null,
+          resolvedAddress: '1.1.1.1',
+          error: null,
+        };
   return { locationId, probe: null, cold: run, warm: run, rttMs: 10, packetLoss: 0, tls: null, headers: {}, status, error: null };
 }
 

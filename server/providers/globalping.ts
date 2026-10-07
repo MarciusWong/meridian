@@ -85,7 +85,15 @@ function flattenHeaders(headers: GpRawResult['headers']): Record<string, string>
 
 // Explicit single-value status headers first; x-cache last because multi-tier
 // caches list every tier there ("cp3071 miss, cp3071 hit/15487").
-const CACHE_HEADERS = ['cf-cache-status', 'x-cache-status', 'x-vercel-cache', 'x-nf-cache-status', 'cdn-cache', 'x-proxy-cache', 'x-cache'];
+const CACHE_HEADERS = [
+  'cf-cache-status',
+  'x-cache-status',
+  'x-vercel-cache',
+  'x-nf-cache-status',
+  'cdn-cache',
+  'x-proxy-cache',
+  'x-cache',
+];
 const CACHE_TOKEN = /\b(HIT|MISS|EXPIRED|STALE|BYPASS|DYNAMIC|REVALIDATED|UPDATING|PASS)\b/g;
 
 /** The cache result at the tier nearest the visitor, which is the last one listed. */
@@ -110,7 +118,8 @@ export function parseHttpResult(raw: GpRawResult): { run: HttpProbeRun; tls: Tls
     firstByte: num(t.firstByte),
     download: num(t.download),
   };
-  const ttfb = timings.firstByte === null ? null : (timings.dns ?? 0) + (timings.tcp ?? 0) + (timings.tls ?? 0) + timings.firstByte;
+  const ttfb =
+    timings.firstByte === null ? null : (timings.dns ?? 0) + (timings.tcp ?? 0) + (timings.tls ?? 0) + timings.firstByte;
   const failed = raw.status !== 'finished';
 
   const run: HttpProbeRun = {
@@ -204,8 +213,16 @@ export function assembleLocationResults(
     const index = matches.get(loc.id);
     if (index === undefined) {
       return {
-        locationId: loc.id, probe: null, cold: null, warm: null, rttMs: null, packetLoss: null, tls: null, headers: {},
-        status: 'no-probe', error: `No Globalping probe was available in ${loc.city}.`,
+        locationId: loc.id,
+        probe: null,
+        cold: null,
+        warm: null,
+        rttMs: null,
+        packetLoss: null,
+        tls: null,
+        headers: {},
+        status: 'no-probe',
+        error: `No Globalping probe was available in ${loc.city}.`,
       };
     }
     const { probe, result } = cold.results[index];
@@ -267,7 +284,11 @@ export class GlobalpingClient {
   }
 
   async create(body: object): Promise<string> {
-    const res = await this.fetchImpl(`${API}/measurements`, { method: 'POST', headers: this.headers(), body: JSON.stringify(body) });
+    const res = await this.fetchImpl(`${API}/measurements`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(body),
+    });
     const payload = (await res.json().catch(() => ({}))) as { id?: string; error?: { message?: string; type?: string } };
     if (res.status === 429) {
       throw new GlobalpingError(
@@ -316,9 +337,7 @@ export async function measureGlobally(
   const hostname = new URL(url).hostname;
   const [warm, ping] = await Promise.all([
     client.run(buildHttpRequest(url, locations, cold.id)).catch(() => null),
-    client
-      .run({ type: 'ping', target: hostname, locations: cold.id, measurementOptions: { packets: 10 } })
-      .catch(() => null),
+    client.run({ type: 'ping', target: hostname, locations: cold.id, measurementOptions: { packets: 10 } }).catch(() => null),
   ]);
 
   return {

@@ -12,6 +12,9 @@ describe('normaliseUrl', () => {
     expect(normaliseUrl('example.com:8443/path')).toBe('https://example.com:8443/path');
     expect(() => normaliseUrl('localhost:8080')).toThrow(/public domain/);
   });
+  it('rejects absurdly long URLs', () => {
+    expect(() => normaliseUrl(`https://example.com/${'a'.repeat(2100)}`)).toThrow(/too long/);
+  });
   it('trims whitespace', () => {
     expect(normaliseUrl('  https://example.com  ')).toBe('https://example.com/');
   });
@@ -31,8 +34,20 @@ describe('normaliseUrl', () => {
 
 describe('isPrivateAddress', () => {
   it.each([
-    '127.0.0.1', '10.1.2.3', '172.16.0.1', '172.31.255.255', '192.168.1.1', '169.254.169.254', '0.0.0.0',
-    '100.64.0.1', '::1', 'fc00::1', 'fd12:3456::1', 'fe80::1', '::ffff:127.0.0.1', '::',
+    '127.0.0.1',
+    '10.1.2.3',
+    '172.16.0.1',
+    '172.31.255.255',
+    '192.168.1.1',
+    '169.254.169.254',
+    '0.0.0.0',
+    '100.64.0.1',
+    '::1',
+    'fc00::1',
+    'fd12:3456::1',
+    'fe80::1',
+    '::ffff:127.0.0.1',
+    '::',
   ])('flags %s as private', (ip) => {
     expect(isPrivateAddress(ip)).toBe(true);
   });

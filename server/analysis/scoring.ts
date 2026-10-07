@@ -5,7 +5,8 @@ import type { GlobalStats, LocationResult, RegionId, Scores, TestLocation } from
 function erf(x: number): number {
   const sign = Math.sign(x);
   const t = 1 / (1 + 0.3275911 * Math.abs(x));
-  const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+  const y =
+    1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
   return sign * y;
 }
 
